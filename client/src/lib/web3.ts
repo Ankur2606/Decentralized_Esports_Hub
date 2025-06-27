@@ -4,7 +4,7 @@ import { CHAIN_CONFIG, CONTRACT_ADDRESSES, ADMIN_ADDRESS } from "./constants";
 // Initialize Thirdweb SDK for client-side use
 export const getSDK = () => {
   return new ThirdwebSDK(CHAIN_CONFIG.chainId, {
-    clientId: process.env.VITE_THIRDWEB_CLIENT_ID,
+    clientId: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
   });
 };
 

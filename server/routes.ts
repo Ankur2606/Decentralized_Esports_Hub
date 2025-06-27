@@ -345,5 +345,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin - Contract deployment
+  app.post('/api/admin/deploy-contracts', async (req, res) => {
+    try {
+      const { exec } = require('child_process');
+      const path = require('path');
+      
+      // Check if required environment variables are present
+      const requiredEnvVars = [
+        'THIRDWEB_SECRET_KEY',
+        'ADMIN_WALLET_ADDRESS'
+      ];
+
+      const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+      if (missingVars.length > 0) {
+        return res.status(400).json({ 
+          error: "Missing required environment variables", 
+          missing: missingVars 
+        });
+      }
+
+      // Run the deployment script
+      const deployScript = path.join(process.cwd(), 'deploy.js');
+      
+      res.json({ message: "Contract deployment started. Check console for progress..." });
+      
+      exec(`node ${deployScript}`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('❌ Deployment failed:', error);
+          broadcast({ event: "deployment:failed", data: { error: error.message } });
+          return;
+        }
+        
+        if (stderr) {
+          console.error('⚠️ Deployment warnings:', stderr);
+        }
+        
+        console.log(stdout);
+        console.log('✅ Contract deployment completed successfully!');
+        
+        // Broadcast success
+        broadcast({ event: "deployment:completed", data: { stdout } });
+      });
+      
+    } catch (error) {
+      console.error("Deployment initiation failed:", error);
+      res.status(500).json({ error: "Failed to start deployment" });
+    }
+  });
+
+  // Check deployment status
+  app.get('/api/admin/deployment-status', async (req, res) => {
+    try {
+      const contractAddresses = {
+        predictionMarket: process.env.PREDICTION_MARKET_ADDRESS,
+        fanTokenDAO: process.env.FAN_TOKEN_DAO_ADDRESS,
+        skillShowcase: process.env.SKILL_SHOWCASE_ADDRESS,
+        courseNFT: process.env.COURSE_NFT_ADDRESS,
+        marketplace: process.env.MARKETPLACE_ADDRESS,
+      };
+
+      const deployed = Object.values(contractAddresses).filter(addr => addr).length;
+      const total = 5;
+
+      res.json({
+        deployed,
+        total,
+        contracts: contractAddresses,
+        isComplete: deployed === total
+      });
+    } catch (error) {
+      console.error("Deployment status check failed:", error);
+      res.status(500).json({ error: "Failed to check deployment status" });
+    }
+  });
+
   return httpServer;
 }

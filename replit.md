@@ -108,6 +108,7 @@ ChiliZ eSports Hub is a comprehensive Web3 ecosystem for eSports fans built on t
 
 Changelog:
 - June 27, 2025. Initial setup
+- June 27, 2025. Added comprehensive admin deployment system with Thirdweb CLI integration, contract management, and real-time deployment status tracking
 
 ## User Preferences
 

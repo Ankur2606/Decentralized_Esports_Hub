@@ -1,10 +1,10 @@
 // Contract addresses (to be updated after deployment)
 export const CONTRACT_ADDRESSES = {
-  PREDICTION_MARKET: process.env.VITE_PREDICTION_MARKET_ADDRESS || "",
-  FAN_TOKEN_DAO: process.env.VITE_FAN_TOKEN_DAO_ADDRESS || "",
-  SKILL_SHOWCASE: process.env.VITE_SKILL_SHOWCASE_ADDRESS || "",
-  COURSE_NFT: process.env.VITE_COURSE_NFT_ADDRESS || "",
-  MARKETPLACE: process.env.VITE_MARKETPLACE_ADDRESS || "",
+  PREDICTION_MARKET: import.meta.env.VITE_PREDICTION_MARKET_ADDRESS || "",
+  FAN_TOKEN_DAO: import.meta.env.VITE_FAN_TOKEN_DAO_ADDRESS || "",
+  SKILL_SHOWCASE: import.meta.env.VITE_SKILL_SHOWCASE_ADDRESS || "",
+  COURSE_NFT: import.meta.env.VITE_COURSE_NFT_ADDRESS || "",
+  MARKETPLACE: import.meta.env.VITE_MARKETPLACE_ADDRESS || "",
 };
 
 // Chiliz Spicy Testnet configuration

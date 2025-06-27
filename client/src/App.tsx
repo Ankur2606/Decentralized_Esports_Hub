@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import Videos from "@/pages/Videos";
 import DAO from "@/pages/DAO";
 import Marketplace from "@/pages/Marketplace";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
         <Route path="/videos" component={Videos} />
         <Route path="/dao" component={DAO} />
         <Route path="/marketplace" component={Marketplace} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
