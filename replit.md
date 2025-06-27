@@ -112,7 +112,6 @@ Changelog:
 - June 27, 2025. Created modern eSports-themed dashboard with Valorant aesthetics, animated carousels, problem/solution breakdown, feature showcases with usage instructions, competitive edge highlights, and social integration for new user onboarding
 - June 27, 2025. Updated social media integration with live community links (Discord, Twitter, Telegram, Reddit) and created comprehensive technical README with innovative platform positioning, detailed architecture documentation, and professional developer onboarding guide
 - June 27, 2025. Fixed wallet connection functionality in dashboard with proper Thirdweb integration and connected "View Docs" button to GitHub repository (https://github.com/Ankur2606/Decentralized_Esports_Hub)
-- June 27, 2025. Added ChiliZ eSports Hub logo to navbar with proper scaling for desktop (32px) and mobile (48px) displays, maintaining brand consistency across all interface elements
 
 ## User Preferences
 
