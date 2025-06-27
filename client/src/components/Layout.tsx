@@ -83,14 +83,14 @@ export default function Layout({ children }: LayoutProps) {
               {/* WebSocket Status */}
               <div className="hidden sm:flex items-center space-x-2">
                 {connected ? (
-                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-400">
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-400 animate-pulse">
                     <Wifi className="h-3 w-3 mr-1" />
-                    Live
+                    LIVE
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-400">
                     <WifiOff className="h-3 w-3 mr-1" />
-                    Offline
+                    Connecting...
                   </Badge>
                 )}
               </div>
