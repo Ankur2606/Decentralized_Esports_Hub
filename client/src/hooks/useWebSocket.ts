@@ -14,6 +14,13 @@ export function useWebSocket() {
 
   const connect = () => {
     try {
+      // Check if we're in development mode and skip WebSocket connection to avoid Vite conflicts
+      if (import.meta.env.DEV) {
+        console.log("WebSocket disabled in development mode to prevent conflicts");
+        setConnected(false);
+        return;
+      }
+      
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const wsUrl = `${protocol}//${window.location.host}/ws`;
       

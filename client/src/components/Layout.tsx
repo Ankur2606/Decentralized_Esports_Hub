@@ -41,17 +41,17 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-slate-900 to-purple-900">
       {/* Navigation Header */}
-      <nav className="sticky top-0 z-50 bg-dark-bg/90 backdrop-blur-lg border-b border-cyan-accent/20">
+      <nav className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-lg border-b border-cyan-400/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-4">
-              <div className="gaming-gradient p-2 rounded-lg">
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg">
                 <Gamepad2 className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold glow-text hidden sm:block">
+              <h1 className="text-xl font-bold text-white drop-shadow-lg hidden sm:block">
                 ChiliZ eSports Hub
               </h1>
             </Link>
@@ -66,8 +66,8 @@ export default function Layout({ children }: LayoutProps) {
                       variant="ghost"
                       className={`flex items-center space-x-2 transition-colors ${
                         isActive(item.href)
-                          ? "text-cyan-accent"
-                          : "text-light-text hover:text-cyan-accent"
+                          ? "text-cyan-400"
+                          : "text-white hover:text-cyan-400"
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -83,12 +83,12 @@ export default function Layout({ children }: LayoutProps) {
               {/* WebSocket Status */}
               <div className="hidden sm:flex items-center space-x-2">
                 {connected ? (
-                  <Badge variant="secondary" className="bg-success-green/20 text-success-green border-success-green">
+                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-400">
                     <Wifi className="h-3 w-3 mr-1" />
                     Live
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-error-red/20 text-error-red border-error-red">
+                  <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-400">
                     <WifiOff className="h-3 w-3 mr-1" />
                     Offline
                   </Badge>
@@ -99,7 +99,7 @@ export default function Layout({ children }: LayoutProps) {
               {account && (
                 <div className="hidden sm:block text-sm">
                   <div className="text-gray-400">Balance:</div>
-                  <div className="text-cyan-accent font-bold">-- CHZ</div>
+                  <div className="text-cyan-400 font-bold">-- CHZ</div>
                 </div>
               )}
 
@@ -125,7 +125,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-cyan-accent/20 bg-dark-bg/95">
+          <div className="md:hidden border-t border-cyan-400/20 bg-slate-900/95">
             <div className="px-4 py-4 space-y-2">
               {navigation.map((item) => {
                 const Icon = item.icon;
@@ -135,8 +135,8 @@ export default function Layout({ children }: LayoutProps) {
                       variant="ghost"
                       className={`w-full justify-start space-x-2 ${
                         isActive(item.href)
-                          ? "text-cyan-accent bg-cyan-accent/10"
-                          : "text-light-text"
+                          ? "text-cyan-400 bg-cyan-400/10"
+                          : "text-white"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -148,16 +148,16 @@ export default function Layout({ children }: LayoutProps) {
               })}
               
               {/* Mobile Status */}
-              <div className="pt-4 border-t border-cyan-accent/20">
+              <div className="pt-4 border-t border-cyan-400/20">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Status:</span>
                   {connected ? (
-                    <Badge variant="secondary" className="bg-success-green/20 text-success-green border-success-green">
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-400">
                       <Wifi className="h-3 w-3 mr-1" />
                       Live
                     </Badge>
                   ) : (
-                    <Badge variant="secondary" className="bg-error-red/20 text-error-red border-error-red">
+                    <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-400">
                       <WifiOff className="h-3 w-3 mr-1" />
                       Offline
                     </Badge>
@@ -167,11 +167,11 @@ export default function Layout({ children }: LayoutProps) {
                   <div className="mt-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-400">CHZ:</span>
-                      <span className="text-cyan-accent font-bold">--</span>
+                      <span className="text-cyan-400 font-bold">--</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">FTK:</span>
-                      <span className="text-warning-gold font-bold">--</span>
+                      <span className="text-yellow-400 font-bold">--</span>
                     </div>
                   </div>
                 )}
