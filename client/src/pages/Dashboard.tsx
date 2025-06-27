@@ -20,7 +20,9 @@ import {
   Coins,
   ExternalLink
 } from "lucide-react";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useConnect } from "thirdweb/react";
+import { createWallet } from "thirdweb/wallets";
+import { client } from "@/lib/thirdweb";
 import { Link } from "wouter";
 
 interface FeatureCard {
@@ -154,6 +156,7 @@ const gameCarousel: GameCarouselItem[] = [
 export default function Dashboard() {
   const [currentGame, setCurrentGame] = useState(0);
   const [currentFeature, setCurrentFeature] = useState(0);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 1247,
     activeBets: 89,
@@ -161,6 +164,7 @@ export default function Dashboard() {
     coursesAvailable: 23
   });
   const account = useActiveAccount();
+  const { connect } = useConnect();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -175,6 +179,23 @@ export default function Dashboard() {
 
   const prevFeature = () => {
     setCurrentFeature((prev) => (prev - 1 + features.length) % features.length);
+  };
+
+  const handleConnect = async () => {
+    setIsConnecting(true);
+    try {
+      const wallet = createWallet("io.metamask");
+      await connect(async () => {
+        await wallet.connect({
+          client: client,
+        });
+        return wallet;
+      });
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   return (
@@ -199,9 +220,14 @@ export default function Dashboard() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             {!account ? (
-              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-8 py-4 text-lg">
+              <Button 
+                onClick={handleConnect} 
+                disabled={isConnecting}
+                size="lg" 
+                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-8 py-4 text-lg"
+              >
                 <Zap className="mr-2 h-5 w-5" />
-                Connect Wallet to Start
+                {isConnecting ? "Connecting..." : "Connect Wallet to Start"}
               </Button>
             ) : (
               <Link href="/betting">
@@ -211,7 +237,12 @@ export default function Dashboard() {
                 </Button>
               </Link>
             )}
-            <Button variant="outline" size="lg" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 px-8 py-4 text-lg">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 px-8 py-4 text-lg"
+              onClick={() => window.open("https://github.com/Ankur2606/Decentralized_Esports_Hub", "_blank")}
+            >
               <ExternalLink className="mr-2 h-5 w-5" />
               View Docs
             </Button>

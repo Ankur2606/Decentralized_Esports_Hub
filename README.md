@@ -1,8 +1,5 @@
 # 🔥 ChiliZ eSports Hub - SportFi Revolution for Fans & Athletes
-
-[![Chiliz SportFi](https://img.shields.io/badge/Chiliz-SportFi-red.svg)](https://chiliz.com/)
-[![Fan Experience](https://img.shields.io/badge/Fan-Experience-purple.svg)](https://hackathon.chiliz.com/)
-[![Built at Hackathon](https://img.shields.io/badge/Built_at-Chiliz_Hackathon-green.svg)](https://hackathon.chiliz.com/)
+![image](image.png)
 
 > **Vibe-first SportFi platform** - Connecting fans and athletes through prediction markets, skill showcases, community governance, and token rewards. Built for the Chiliz hackathon with pure passion and code.
 
@@ -49,8 +46,8 @@ ChiliZ eSports Hub flips traditional fan engagement by putting supporters at the
 
 ```bash
 # Clone the revolutionary platform
-git clone https://github.com/your-org/chiliz-esports-hub.git
-cd chiliz-esports-hub
+git clone https://github.com/Ankur2606/Decentralized_Esports_Hub
+cd Decentralized_Esports_Hub
 
 # Install dependencies
 npm install
@@ -74,6 +71,7 @@ Add Chiliz Spicy Testnet to MetaMask:
   "chainId": "0x15B3A",
   "chainName": "Chiliz Spicy Testnet",
   "rpcUrls": ["https://spicy-rpc.chiliz.com/"],
+  "chainID": 88882
   "nativeCurrency": {
     "name": "CHZ",
     "symbol": "CHZ",
