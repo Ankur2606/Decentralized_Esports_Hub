@@ -373,7 +373,7 @@ export default function Dashboard() {
             {/* Navigation Buttons */}
             <button
               onClick={prevFeature}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 text-white p-3 rounded-full transition-all"
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 text-white p-3 rounded-full transition-all pl-[9px] pr-[9px] pt-[9px] pb-[9px]"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
