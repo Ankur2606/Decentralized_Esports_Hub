@@ -63,7 +63,7 @@ export default function Layout({ children }: LayoutProps) {
                 <img 
                   src={logoImage} 
                   alt="ChiliZ eSports Hub" 
-                  className="h-10 w-auto object-contain"
+                  className="h-10 w-auto object-contain rounded-lg shadow-lg shadow-cyan-400/30 hover:shadow-cyan-400/50 transition-shadow duration-300"
                 />
               </div>
             </Link>
