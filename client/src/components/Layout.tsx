@@ -8,9 +8,11 @@ import WalletConnect from "@/components/WalletConnect";
 import { client, chilizSpicyTestnet } from "@/lib/thirdweb";
 import { 
   Gamepad2, 
-  Dice1, 
+  Home,
+  Trophy,
   Video, 
   Vote, 
+  GraduationCap,
   ShoppingCart, 
   Menu,
   X,
@@ -35,9 +37,11 @@ export default function Layout({ children }: LayoutProps) {
   });
 
   const navigation = [
-    { name: "Predictions", href: "/", icon: Dice1 },
+    { name: "Dashboard", href: "/", icon: Home },
+    { name: "Predictions", href: "/betting", icon: Trophy },
     { name: "Videos", href: "/videos", icon: Video },
     { name: "DAO", href: "/dao", icon: Vote },
+    { name: "Courses", href: "/courses", icon: GraduationCap },
     { name: "Marketplace", href: "/marketplace", icon: ShoppingCart },
   ];
 

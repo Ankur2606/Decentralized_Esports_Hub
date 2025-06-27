@@ -5,6 +5,7 @@ import { ThirdwebProvider } from "thirdweb/react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
+import Dashboard from "@/pages/Dashboard";
 import Home from "@/pages/Home";
 import Videos from "@/pages/Videos";
 import DAO from "@/pages/DAO";
@@ -16,7 +17,9 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route path="/" component={Dashboard} />
+        <Route path="/betting" component={Home} />
+        <Route path="/courses" component={Home} />
         <Route path="/videos" component={Videos} />
         <Route path="/dao" component={DAO} />
         <Route path="/marketplace" component={Marketplace} />
