@@ -141,3 +141,42 @@ export const DEFAULTS = {
   PROPOSAL_DURATION_DAYS: 7,
   PAGINATION_LIMIT: 20,
 };
+
+export const DEPLOYMENT_STATUS = {
+  "deployed": 0,
+  "total": 5,
+  "contracts": {},
+  "isComplete": false,
+  "adminAddress": "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa",
+  "testFunctionsReady": true
+};
+export const CONTRACT_TESTING = {
+  minBetAmount: "0.001", // CHZ
+  uploadReward: "0.01", // CHZ
+  verificationBonus: "0.05", // CHZ
+  minCoursePrice: "0.1", // CHZ
+  platformFee: "2.5", // percentage
+  maxGasCost: "0.002" // CHZ
+};
+
+export const ADMIN_FUNCTIONS = {
+  // These functions will be available once contracts are deployed
+  predictionMarket: [
+    "createEvent(name, ipfsHash, endTime)",
+    "resolveEvent(eventId, winningOption)"
+  ],
+  skillShowcase: [
+    "verifyVideo(videoId)",
+    "fundContract() - Add CHZ for rewards"
+  ],
+  fanTokenDAO: [
+    "mint(userAddress, amount)",
+    "executeProposal(proposalId)"
+  ],
+  courseNFT: [
+    "setRoyalty(recipient, bps)"
+  ],
+  marketplace: [
+    "updatePlatformFee(newFee)"
+  ]
+};

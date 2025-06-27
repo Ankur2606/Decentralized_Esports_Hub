@@ -4,7 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, CheckCircle, Loader2, Rocket, Settings } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  AlertCircle, 
+  CheckCircle, 
+  Loader2, 
+  Rocket, 
+  Settings,
+  Terminal,
+  Copy,
+  Coins,
+  Video,
+  Users,
+  ShoppingCart,
+  ExternalLink
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { apiRequest } from "@/lib/queryClient";
@@ -32,68 +48,131 @@ const contractNames = {
 
 export default function AdminPanel() {
   const [isDeploying, setIsDeploying] = useState(false);
+  const [activeTab, setActiveTab] = useState("deploy");
+  const [testData, setTestData] = useState({
+    eventName: "Team A vs Team B - Valorant Championship",
+    tokenAmount: "100",
+    coursePrice: "0.1",
+    videoTitle: "Pro Valorant Tips"
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { connected } = useWebSocket();
 
   const { data: deploymentStatus, isLoading } = useQuery<DeploymentStatus>({
     queryKey: ["/api/admin/deployment-status"],
-    refetchInterval: 5000, // Check status every 5 seconds
+    refetchInterval: 5000,
   });
 
-  const deployMutation = useMutation({
-    mutationFn: () => fetch("/api/admin/deploy-contracts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    }).then(res => res.json()),
-    onSuccess: () => {
-      setIsDeploying(true);
-      toast({
-        title: "Deployment Started",
-        description: "Contract deployment has begun. This may take several minutes.",
-      });
+  const contracts = [
+    { 
+      name: "PredictionMarket", 
+      description: "Betting and prediction events",
+      icon: Coins,
+      testFeatures: ["Create betting events", "Resolve outcomes", "Low gas betting (0.001 CHZ)"]
     },
-    onError: (error: any) => {
+    { 
+      name: "FanTokenDAO", 
+      description: "Governance and fan tokens",
+      icon: Users,
+      testFeatures: ["Mint fan tokens", "Create proposals", "Token-weighted voting"]
+    },
+    { 
+      name: "SkillShowcase", 
+      description: "Video uploads with CHZ rewards",
+      icon: Video,
+      testFeatures: ["Upload videos", "Earn 0.01 CHZ per upload", "Video verification"]
+    },
+    { 
+      name: "CourseNFT", 
+      description: "Educational NFT marketplace",
+      icon: CheckCircle,
+      testFeatures: ["Create course NFTs", "0.1 CHZ minimum price", "Royalty system"]
+    },
+    { 
+      name: "Marketplace", 
+      description: "General trading platform",
+      icon: ShoppingCart,
+      testFeatures: ["List any items", "2.5% platform fee", "Instant trading"]
+    }
+  ];
+
+  const deploymentCommands = [
+    "npx thirdweb deploy contracts/PredictionMarket.sol",
+    "npx thirdweb deploy contracts/FanTokenDAO.sol",
+    "npx thirdweb deploy contracts/SkillShowcase.sol",
+    "npx thirdweb deploy contracts/CourseNFT.sol",
+    "npx thirdweb deploy contracts/Marketplace.sol"
+  ];
+
+  const constructorArgs = {
+    PredictionMarket: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]',
+    FanTokenDAO: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Fan Token", "FTK"]',
+    SkillShowcase: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]',
+    CourseNFT: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Course NFT", "COURSE", "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", 250]',
+    Marketplace: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied to clipboard",
+      description: "Command copied successfully",
+    });
+  };
+
+  const testCreateEvent = async () => {
+    try {
+      const endTime = Math.floor(Date.now() / 1000) + 3600;
+      const response = await fetch("/api/admin/test/create-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: testData.eventName,
+          ipfsHash: "QmTestEventHash123",
+          endTime
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Test Event Created",
+          description: "Users can now place bets on this event",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Deployment Failed",
-        description: error.message || "Failed to start contract deployment",
+        title: "Error",
+        description: "Failed to create test event",
         variant: "destructive",
       });
-    },
-  });
+    }
+  };
 
-  // Listen for WebSocket deployment events
-  useEffect(() => {
-    if (!connected) return;
-
-    const handleDeploymentCompleted = () => {
-      setIsDeploying(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/deployment-status"] });
-      toast({
-        title: "Deployment Complete",
-        description: "All contracts have been deployed successfully!",
+  const testMintTokens = async () => {
+    try {
+      const response = await fetch("/api/admin/test/mint-tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa",
+          amount: testData.tokenAmount
+        })
       });
-    };
 
-    const handleDeploymentFailed = (data: any) => {
-      setIsDeploying(false);
+      if (response.ok) {
+        toast({
+          title: "Fan Tokens Minted",
+          description: `${testData.tokenAmount} FTK tokens minted successfully`,
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Deployment Failed",
-        description: data.error || "Contract deployment failed",
+        title: "Error",
+        description: "Failed to mint tokens",
         variant: "destructive",
       });
-    };
-
-    // In a real implementation, you'd subscribe to WebSocket events here
-    // For now, we'll rely on the polling query
-    
-    return () => {
-      // Cleanup WebSocket listeners
-    };
-  }, [connected, queryClient, toast]);
-
-  const handleDeploy = () => {
-    deployMutation.mutate();
+    }
   };
 
   const progressPercentage = deploymentStatus 
@@ -102,10 +181,10 @@ export default function AdminPanel() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-slate-800 border-cyan-400/20">
         <CardContent className="flex items-center justify-center p-6">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span className="ml-2">Loading deployment status...</span>
+          <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
+          <span className="ml-2 text-white">Loading deployment status...</span>
         </CardContent>
       </Card>
     );
@@ -113,107 +192,188 @@ export default function AdminPanel() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Admin Panel - Contract Deployment
-          </CardTitle>
-          <CardDescription>
-            Deploy and manage smart contracts on Chiliz Spicy Testnet
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Deployment Progress */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Deployment Progress</span>
-              <span className="text-sm text-muted-foreground">
-                {deploymentStatus?.deployed || 0} / {deploymentStatus?.total || 5} contracts
-              </span>
-            </div>
-            <Progress value={progressPercentage} className="w-full" />
-          </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Admin Panel</h1>
+          <p className="text-gray-400 mt-2">Deploy and manage ChiliZ eSports Hub contracts</p>
+        </div>
+        <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-400">
+          Admin: 0x0734...47Fa
+        </Badge>
+      </div>
 
-          {/* Contract Status Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(contractNames).map(([key, name]) => {
-              const address = deploymentStatus?.contracts[key as keyof typeof deploymentStatus.contracts];
-              const isDeployed = !!address;
-              
-              return (
-                <Card key={key} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-sm">{name}</h4>
-                      {isDeployed && (
-                        <p className="text-xs text-muted-foreground font-mono">
-                          {address?.slice(0, 8)}...{address?.slice(-6)}
-                        </p>
-                      )}
-                    </div>
-                    <Badge variant={isDeployed ? "default" : "secondary"}>
-                      {isDeployed ? (
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                      ) : (
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                      )}
-                      {isDeployed ? "Deployed" : "Pending"}
-                    </Badge>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="bg-slate-800 border-cyan-400/20">
+          <TabsTrigger value="deploy">Contract Deployment</TabsTrigger>
+          <TabsTrigger value="test">Testing Functions</TabsTrigger>
+          <TabsTrigger value="commands">CLI Commands</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="deploy" className="space-y-6">
+          <Card className="bg-gradient-to-br from-purple-900/20 to-cyan-900/20 border-cyan-400/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center space-x-2">
+                <Rocket className="h-5 w-5 text-cyan-400" />
+                <span>Quick Deployment Guide</span>
+              </CardTitle>
+              <CardDescription>
+                Ready-to-deploy contracts optimized for Chiliz Spicy Testnet
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-white">Network Configuration</h4>
+                  <div className="text-sm text-gray-400 space-y-1">
+                    <p>• Chain ID: 88882</p>
+                    <p>• RPC: https://spicy-rpc.chiliz.com/</p>
+                    <p>• Explorer: https://spicy.chz.tools/</p>
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium text-white">Gas Optimization</h4>
+                  <div className="text-sm text-gray-400 space-y-1">
+                    <p>• Min bet: 0.001 CHZ</p>
+                    <p>• Upload reward: 0.01 CHZ</p>
+                    <p>• Max gas cost: 0.002 CHZ</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {contracts.map((contract) => {
+              const Icon = contract.icon;
+              return (
+                <Card key={contract.name} className="bg-slate-800 border-cyan-400/20 hover:border-cyan-400/40 transition-colors">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-cyan-500/20">
+                        <Icon className="h-5 w-5 text-cyan-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">{contract.name}</CardTitle>
+                        <CardDescription className="text-xs">{contract.description}</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      {contract.testFeatures.map((feature, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <CheckCircle className="h-3 w-3 text-green-400" />
+                          <span className="text-xs text-gray-400">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
                 </Card>
               );
             })}
           </div>
+        </TabsContent>
 
-          {/* Deployment Actions */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              onClick={handleDeploy}
-              disabled={deployMutation.isPending || isDeploying || deploymentStatus?.isComplete}
-              className="flex-1"
-            >
-              {deployMutation.isPending || isDeploying ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Deploying...
-                </>
-              ) : deploymentStatus?.isComplete ? (
-                <>
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  All Contracts Deployed
-                </>
-              ) : (
-                <>
-                  <Rocket className="h-4 w-4 mr-2" />
-                  Deploy Contracts
-                </>
-              )}
-            </Button>
-            
-            {deploymentStatus?.isComplete && (
-              <Button
-                variant="outline"
-                onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/deployment-status"] })}
-              >
-                Refresh Status
-              </Button>
-            )}
-          </div>
+        <TabsContent value="test" className="space-y-6">
+          <Card className="bg-slate-800 border-cyan-400/20">
+            <CardHeader>
+              <CardTitle className="text-white">Admin Testing Functions</CardTitle>
+              <CardDescription>
+                Create test content to demonstrate contract functionality
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <Label className="text-white">Create Test Betting Event</Label>
+                <Input
+                  value={testData.eventName}
+                  onChange={(e) => setTestData(prev => ({ ...prev, eventName: e.target.value }))}
+                  placeholder="Event name"
+                  className="bg-slate-700 border-gray-600 text-white"
+                />
+                <Button onClick={testCreateEvent} className="w-full bg-purple-600 hover:bg-purple-700">
+                  <Coins className="mr-2 h-4 w-4" />
+                  Create Test Event
+                </Button>
+              </div>
 
-          {/* Deployment Info */}
-          <div className="bg-muted p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Deployment Information</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Contracts will be deployed to Chiliz Spicy Testnet</li>
-              <li>• Deployment uses your configured admin wallet address</li>
-              <li>• Process may take 5-10 minutes to complete</li>
-              <li>• Contract addresses will be automatically saved</li>
-              <li>• App restart required after deployment</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+              <div className="space-y-3">
+                <Label className="text-white">Mint Fan Tokens</Label>
+                <Input
+                  value={testData.tokenAmount}
+                  onChange={(e) => setTestData(prev => ({ ...prev, tokenAmount: e.target.value }))}
+                  placeholder="Token amount"
+                  className="bg-slate-700 border-gray-600 text-white"
+                />
+                <Button onClick={testMintTokens} className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Users className="mr-2 h-4 w-4" />
+                  Mint FTK Tokens
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="commands" className="space-y-6">
+          <Card className="bg-slate-800 border-cyan-400/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center space-x-2">
+                <Terminal className="h-5 w-5 text-cyan-400" />
+                <span>Deployment Commands</span>
+              </CardTitle>
+              <CardDescription>
+                Run these commands to deploy contracts using Thirdweb CLI
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {deploymentCommands.map((command, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-sm">{contracts[index].name}</Label>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => copyToClipboard(command)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="bg-slate-900 p-3 rounded-lg border border-gray-700">
+                    <code className="text-cyan-400 text-sm font-mono">{command}</code>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Constructor args: <code className="text-cyan-400">{constructorArgs[contracts[index].name as keyof typeof constructorArgs]}</code>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <AlertCircle className="h-5 w-5 text-yellow-400 mt-0.5" />
+                  <div className="space-y-2">
+                    <p className="text-yellow-400 font-medium">Deployment Instructions</p>
+                    <div className="text-sm text-gray-300 space-y-1">
+                      <p>1. Run each command in your terminal</p>
+                      <p>2. Select "Chiliz Spicy Testnet" when prompted</p>
+                      <p>3. Use the provided constructor arguments</p>
+                      <p>4. Update contract addresses in your constants file</p>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2"
+                        onClick={() => window.open("https://spicy.chz.tools/", "_blank")}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-2" />
+                        Open Chiliz Explorer
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

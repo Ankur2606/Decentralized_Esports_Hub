@@ -1,358 +1,233 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@thirdweb-dev/contracts/base/ERC721Base.sol";
 
-contract Marketplace is Ownable, ReentrancyGuard, Pausable, IERC721Receiver {
-    struct Listing {
+contract Marketplace {
+    address public admin;
+    uint256 public itemCounter;
+    uint256 public constant PLATFORM_FEE = 250; // 2.5% platform fee
+    
+    struct MarketItem {
         uint256 itemId;
         address nftContract;
         uint256 tokenId;
         address seller;
+        address buyer;
         uint256 price;
-        bool active;
+        bool sold;
         uint256 listedAt;
-        string category; // "course", "collectible", "merchandise"
+        string itemType; // "nft", "virtual_item", etc.
+        string metadata;
     }
-
-    mapping(uint256 => Listing) public listings;
-    mapping(address => uint256[]) public sellerListings;
-    mapping(string => uint256[]) public categoryListings;
     
-    uint256 public listingCounter;
-    uint256 public constant PLATFORM_FEE = 250; // 2.5%
-    uint256 public constant FEE_DENOMINATOR = 10000;
-    uint256 public constant MIN_PRICE = 0.001 ether; // 0.001 CHZ
-
+    mapping(uint256 => MarketItem) public marketItems;
+    mapping(address => uint256[]) public sellerItems;
+    mapping(address => uint256[]) public buyerItems;
+    
     event ItemListed(
         uint256 indexed itemId,
         address indexed nftContract,
         uint256 indexed tokenId,
         address seller,
         uint256 price,
-        string category
+        string itemType
     );
     
     event ItemSold(
         uint256 indexed itemId,
-        address indexed buyer,
-        address indexed seller,
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address seller,
+        address buyer,
         uint256 price
     );
     
-    event ItemDelisted(
-        uint256 indexed itemId,
-        address indexed seller
-    );
+    event PriceUpdated(uint256 indexed itemId, uint256 oldPrice, uint256 newPrice);
     
-    event PriceUpdated(
-        uint256 indexed itemId,
-        uint256 oldPrice,
-        uint256 newPrice
-    );
-
-    constructor() {}
-
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+    
+    modifier itemExists(uint256 itemId) {
+        require(itemId < itemCounter, "Item does not exist");
+        _;
+    }
+    
+    modifier itemNotSold(uint256 itemId) {
+        require(!marketItems[itemId].sold, "Item already sold");
+        _;
+    }
+    
+    modifier onlySeller(uint256 itemId) {
+        require(marketItems[itemId].seller == msg.sender, "Only seller can modify this item");
+        _;
+    }
+    
+    constructor(address _admin) {
+        admin = _admin;
+    }
+    
     function listItem(
-        address _nftContract,
-        uint256 _tokenId,
-        uint256 _price,
-        string memory _category
-    ) external whenNotPaused returns (uint256) {
-        require(_price >= MIN_PRICE, "Price too low");
-        require(_nftContract != address(0), "Invalid NFT contract");
-        require(
-            keccak256(bytes(_category)) == keccak256(bytes("course")) ||
-            keccak256(bytes(_category)) == keccak256(bytes("collectible")) ||
-            keccak256(bytes(_category)) == keccak256(bytes("merchandise")),
-            "Invalid category"
-        );
-
-        IERC721 nft = IERC721(_nftContract);
-        require(nft.ownerOf(_tokenId) == msg.sender, "Not the owner");
-        require(
-            nft.getApproved(_tokenId) == address(this) || 
-            nft.isApprovedForAll(msg.sender, address(this)),
-            "Marketplace not approved"
-        );
-
-        uint256 itemId = listingCounter++;
+        address nftContract,
+        uint256 tokenId,
+        uint256 price,
+        string memory itemType,
+        string memory metadata
+    ) external returns (uint256) {
+        require(price > 0, "Price must be greater than zero");
+        require(bytes(itemType).length > 0, "Item type cannot be empty");
         
-        listings[itemId] = Listing({
-            itemId: itemId,
-            nftContract: _nftContract,
-            tokenId: _tokenId,
-            seller: msg.sender,
-            price: _price,
-            active: true,
-            listedAt: block.timestamp,
-            category: _category
-        });
-
-        sellerListings[msg.sender].push(itemId);
-        categoryListings[_category].push(itemId);
-
-        // Transfer NFT to marketplace for escrow
-        nft.safeTransferFrom(msg.sender, address(this), _tokenId);
-
-        emit ItemListed(itemId, _nftContract, _tokenId, msg.sender, _price, _category);
+        // If it's an NFT, verify ownership
+        if (nftContract != address(0)) {
+            IERC721 nft = IERC721(nftContract);
+            require(nft.ownerOf(tokenId) == msg.sender, "Must own the NFT to list it");
+            require(nft.getApproved(tokenId) == address(this) || 
+                   nft.isApprovedForAll(msg.sender, address(this)), 
+                   "Marketplace not approved to transfer NFT");
+        }
         
+        uint256 itemId = itemCounter++;
+        MarketItem storage newItem = marketItems[itemId];
+        newItem.itemId = itemId;
+        newItem.nftContract = nftContract;
+        newItem.tokenId = tokenId;
+        newItem.seller = msg.sender;
+        newItem.price = price;
+        newItem.sold = false;
+        newItem.listedAt = block.timestamp;
+        newItem.itemType = itemType;
+        newItem.metadata = metadata;
+        
+        sellerItems[msg.sender].push(itemId);
+        
+        emit ItemListed(itemId, nftContract, tokenId, msg.sender, price, itemType);
         return itemId;
     }
-
-    function buyItem(uint256 _itemId) 
+    
+    function buyItem(uint256 itemId) 
         external 
         payable 
-        nonReentrant 
-        whenNotPaused 
+        itemExists(itemId) 
+        itemNotSold(itemId) 
     {
-        require(_itemId < listingCounter, "Item does not exist");
+        MarketItem storage item = marketItems[itemId];
+        require(msg.value >= item.price, "Insufficient payment");
+        require(msg.sender != item.seller, "Cannot buy your own item");
         
-        Listing storage listing = listings[_itemId];
-        require(listing.active, "Item not active");
-        require(msg.value >= listing.price, "Insufficient payment");
-        require(msg.sender != listing.seller, "Cannot buy own item");
-
-        // Calculate fees
-        uint256 platformFee = (listing.price * PLATFORM_FEE) / FEE_DENOMINATOR;
-        uint256 sellerPayment = listing.price - platformFee;
-
-        // Mark as sold
-        listing.active = false;
-
-        // Transfer NFT to buyer
-        IERC721(listing.nftContract).safeTransferFrom(
-            address(this), 
-            msg.sender, 
-            listing.tokenId
-        );
-
-        // Pay seller
-        payable(listing.seller).transfer(sellerPayment);
-
-        // Refund excess payment
-        if (msg.value > listing.price) {
-            payable(msg.sender).transfer(msg.value - listing.price);
-        }
-
-        emit ItemSold(_itemId, msg.sender, listing.seller, listing.price);
-    }
-
-    function delistItem(uint256 _itemId) 
-        external 
-        nonReentrant 
-    {
-        require(_itemId < listingCounter, "Item does not exist");
+        item.sold = true;
+        item.buyer = msg.sender;
+        buyerItems[msg.sender].push(itemId);
         
-        Listing storage listing = listings[_itemId];
-        require(listing.seller == msg.sender, "Not the seller");
-        require(listing.active, "Item not active");
-
-        listing.active = false;
-
-        // Return NFT to seller
-        IERC721(listing.nftContract).safeTransferFrom(
-            address(this), 
-            msg.sender, 
-            listing.tokenId
-        );
-
-        emit ItemDelisted(_itemId, msg.sender);
-    }
-
-    function updatePrice(uint256 _itemId, uint256 _newPrice) 
-        external 
-    {
-        require(_itemId < listingCounter, "Item does not exist");
-        require(_newPrice >= MIN_PRICE, "Price too low");
+        // Calculate platform fee
+        uint256 platformFeeAmount = (msg.value * PLATFORM_FEE) / 10000;
+        uint256 sellerAmount = msg.value - platformFeeAmount;
         
-        Listing storage listing = listings[_itemId];
-        require(listing.seller == msg.sender, "Not the seller");
-        require(listing.active, "Item not active");
-
-        uint256 oldPrice = listing.price;
-        listing.price = _newPrice;
-
-        emit PriceUpdated(_itemId, oldPrice, _newPrice);
+        // Transfer platform fee to admin
+        (bool feeSuccess, ) = payable(admin).call{value: platformFeeAmount}("");
+        require(feeSuccess, "Platform fee transfer failed");
+        
+        // Transfer payment to seller
+        (bool sellerSuccess, ) = payable(item.seller).call{value: sellerAmount}("");
+        require(sellerSuccess, "Seller payment failed");
+        
+        // Transfer NFT if applicable
+        if (item.nftContract != address(0)) {
+            IERC721(item.nftContract).transferFrom(item.seller, msg.sender, item.tokenId);
+        }
+        
+        emit ItemSold(itemId, item.nftContract, item.tokenId, item.seller, msg.sender, msg.value);
     }
-
-    function getListing(uint256 _itemId) 
+    
+    function updatePrice(uint256 itemId, uint256 newPrice) 
         external 
-        view 
-        returns (Listing memory) 
+        itemExists(itemId) 
+        itemNotSold(itemId) 
+        onlySeller(itemId) 
     {
-        require(_itemId < listingCounter, "Item does not exist");
-        return listings[_itemId];
+        require(newPrice > 0, "Price must be greater than zero");
+        
+        uint256 oldPrice = marketItems[itemId].price;
+        marketItems[itemId].price = newPrice;
+        
+        emit PriceUpdated(itemId, oldPrice, newPrice);
     }
-
-    function getActiveListings() 
+    
+    function cancelListing(uint256 itemId) 
         external 
-        view 
-        returns (uint256[] memory) 
+        itemExists(itemId) 
+        itemNotSold(itemId) 
+        onlySeller(itemId) 
     {
-        uint256[] memory activeListings = new uint256[](listingCounter);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < listingCounter; i++) {
-            if (listings[i].active) {
-                activeListings[count] = i;
-                count++;
-            }
-        }
-
-        // Resize array to actual count
-        uint256[] memory result = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            result[i] = activeListings[i];
-        }
-
-        return result;
+        marketItems[itemId].sold = true; // Mark as sold to prevent further transactions
     }
-
-    function getListingsByCategory(string memory _category) 
+    
+    function getMarketItem(uint256 itemId) 
         external 
         view 
-        returns (uint256[] memory) 
-    {
-        uint256[] memory categoryItems = categoryListings[_category];
-        uint256[] memory activeItems = new uint256[](categoryItems.length);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < categoryItems.length; i++) {
-            if (listings[categoryItems[i]].active) {
-                activeItems[count] = categoryItems[i];
-                count++;
-            }
-        }
-
-        // Resize array to actual count
-        uint256[] memory result = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            result[i] = activeItems[i];
-        }
-
-        return result;
-    }
-
-    function getSellerListings(address _seller) 
-        external 
-        view 
-        returns (uint256[] memory) 
-    {
-        uint256[] memory sellerItems = sellerListings[_seller];
-        uint256[] memory activeItems = new uint256[](sellerItems.length);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < sellerItems.length; i++) {
-            if (listings[sellerItems[i]].active) {
-                activeItems[count] = sellerItems[i];
-                count++;
-            }
-        }
-
-        // Resize array to actual count
-        uint256[] memory result = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            result[i] = activeItems[i];
-        }
-
-        return result;
-    }
-
-    function getListingsByPriceRange(uint256 _minPrice, uint256 _maxPrice) 
-        external 
-        view 
-        returns (uint256[] memory) 
-    {
-        require(_minPrice <= _maxPrice, "Invalid price range");
-
-        uint256[] memory rangeListings = new uint256[](listingCounter);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < listingCounter; i++) {
-            if (
-                listings[i].active &&
-                listings[i].price >= _minPrice &&
-                listings[i].price <= _maxPrice
-            ) {
-                rangeListings[count] = i;
-                count++;
-            }
-        }
-
-        // Resize array to actual count
-        uint256[] memory result = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            result[i] = rangeListings[i];
-        }
-
-        return result;
-    }
-
-    function getMarketplaceStats() 
-        external 
-        view 
+        itemExists(itemId) 
         returns (
-            uint256 totalListings,
-            uint256 activeListings,
-            uint256 totalVolume,
-            uint256 totalSales
+            address nftContract,
+            uint256 tokenId,
+            address seller,
+            address buyer,
+            uint256 price,
+            bool sold,
+            uint256 listedAt,
+            string memory itemType,
+            string memory metadata
         ) 
     {
-        totalListings = listingCounter;
-        uint256 activeListing = 0;
-        uint256 volume = 0;
-        uint256 sales = 0;
-
-        for (uint256 i = 0; i < listingCounter; i++) {
-            if (listings[i].active) {
-                activeListing++;
-            } else {
-                // If not active and was listed, it was sold
-                volume += listings[i].price;
-                sales++;
+        MarketItem storage item = marketItems[itemId];
+        return (
+            item.nftContract,
+            item.tokenId,
+            item.seller,
+            item.buyer,
+            item.price,
+            item.sold,
+            item.listedAt,
+            item.itemType,
+            item.metadata
+        );
+    }
+    
+    function getSellerItems(address seller) external view returns (uint256[] memory) {
+        return sellerItems[seller];
+    }
+    
+    function getBuyerItems(address buyer) external view returns (uint256[] memory) {
+        return buyerItems[buyer];
+    }
+    
+    function getAllActiveItems() external view returns (uint256[] memory) {
+        uint256 activeCount = 0;
+        
+        // Count active items
+        for (uint256 i = 0; i < itemCounter; i++) {
+            if (!marketItems[i].sold) {
+                activeCount++;
             }
         }
-
-        activeListings = activeListing;
-        totalVolume = volume;
-        totalSales = sales;
+        
+        // Create array of active item IDs
+        uint256[] memory activeItems = new uint256[](activeCount);
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 0; i < itemCounter; i++) {
+            if (!marketItems[i].sold) {
+                activeItems[currentIndex] = i;
+                currentIndex++;
+            }
+        }
+        
+        return activeItems;
     }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
+    
+    function updatePlatformFee(uint256 newFee) external onlyAdmin {
+        require(newFee <= 1000, "Platform fee cannot exceed 10%");
+        // Note: This would require a state variable for dynamic fees
+        // For simplicity, keeping it constant in this implementation
     }
-
-    function withdrawFees() external onlyOwner {
-        uint256 balance = address(this).balance;
-        require(balance > 0, "No fees to withdraw");
-        payable(owner()).transfer(balance);
-    }
-
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
-    function emergencyWithdrawNFT(
-        address _nftContract,
-        uint256 _tokenId
-    ) external onlyOwner {
-        // Emergency function to withdraw stuck NFTs
-        IERC721(_nftContract).safeTransferFrom(address(this), owner(), _tokenId);
-    }
-
-    receive() external payable {}
 }
