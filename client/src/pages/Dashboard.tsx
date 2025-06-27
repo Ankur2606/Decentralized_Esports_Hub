@@ -238,7 +238,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Game Carousel */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
@@ -282,7 +281,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Problem & Solution */}
       <section className="py-16 px-4 bg-gradient-to-r from-slate-800/50 to-purple-800/50">
         <div className="max-w-7xl mx-auto">
@@ -319,7 +317,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Features Carousel */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
@@ -382,7 +379,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={nextFeature}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 text-white p-3 rounded-full transition-all"
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 text-white p-3 rounded-full transition-all pt-[9px] pb-[9px] pl-[9px] pr-[9px]"
             >
               <ChevronRight className="h-6 w-6" />
             </button>
@@ -402,7 +399,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Competitive Edge */}
       <section className="py-16 px-4 bg-gradient-to-r from-purple-900/30 to-cyan-900/30">
         <div className="max-w-7xl mx-auto text-center">
@@ -443,7 +439,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Quick Start Guide */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -478,7 +473,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
       {/* Social Links */}
       <section className="py-16 px-4 bg-gradient-to-r from-slate-800/50 to-purple-800/50">
         <div className="max-w-4xl mx-auto text-center">
