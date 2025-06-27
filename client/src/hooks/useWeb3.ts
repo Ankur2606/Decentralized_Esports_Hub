@@ -1,51 +1,56 @@
 import { useState, useEffect } from "react";
+import { useActiveAccount, useActiveWallet } from "thirdweb/react";
 
 export function useWeb3() {
-  const [account, setAccount] = useState<string | null>(null);
+  const activeAccount = useActiveAccount();
+  const activeWallet = useActiveWallet();
   const [balance, setBalance] = useState<string>("0");
   const [fanTokenBalance, setFanTokenBalance] = useState<string>("0");
   const [loading, setLoading] = useState(false);
 
-  // Simulate wallet connection (in real app, would use Web3 provider)
   const connectWallet = async () => {
     setLoading(true);
     try {
-      // Simulate wallet connection
-      const mockAddress = "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa";
-      setAccount(mockAddress);
-      
-      // Fetch user data from API
-      const response = await fetch(`/api/user/${mockAddress}`);
-      if (response.ok) {
-        const userData = await response.json();
-        setBalance(userData.user.chzBalance || "125.45");
-        setFanTokenBalance(userData.user.fanTokenBalance || "1250");
+      // Real wallet connection will be handled by ThirdwebProvider
+      if (activeAccount?.address) {
+        const response = await fetch(`/api/user/${activeAccount.address}`);
+        if (response.ok) {
+          const userData = await response.json();
+          setBalance(userData.user?.chzBalance || "125.45");
+          setFanTokenBalance(userData.user?.fanTokenBalance || "1250");
+        }
       }
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
+      console.error("Failed to fetch user data:", error);
+      // Set default demo balances
+      setBalance("125.45");
+      setFanTokenBalance("1250");
     } finally {
       setLoading(false);
     }
   };
 
   const disconnectWallet = () => {
-    setAccount(null);
     setBalance("0");
     setFanTokenBalance("0");
   };
 
-  // Auto-connect on mount (simulate persistent connection)
   useEffect(() => {
-    connectWallet();
-  }, []);
+    if (activeAccount?.address) {
+      connectWallet();
+    } else {
+      setBalance("0");
+      setFanTokenBalance("0");
+    }
+  }, [activeAccount?.address]);
 
   return {
-    account,
+    account: activeAccount?.address || null,
     balance,
     fanTokenBalance,
     loading,
     connectWallet,
     disconnectWallet,
-    isConnected: !!account
+    isConnected: !!activeAccount?.address
   };
 }
