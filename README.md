@@ -1,74 +1,42 @@
-# 🎮 ChiliZ eSports Hub - Next-Generation Web3 Gaming Ecosystem
+# 🔥 ChiliZ eSports Hub - SportFi Revolution for Fans & Athletes
 
-[![Built with React](https://img.shields.io/badge/React-18.0-61DAFB.svg)](https://reactjs.org/)
-[![Powered by Thirdweb](https://img.shields.io/badge/Thirdweb-Web3-purple.svg)](https://thirdweb.com/)
-[![Chiliz Network](https://img.shields.io/badge/Chiliz-Spicy_Testnet-red.svg)](https://chiliz.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Chiliz SportFi](https://img.shields.io/badge/Chiliz-SportFi-red.svg)](https://chiliz.com/)
+[![Fan Experience](https://img.shields.io/badge/Fan-Experience-purple.svg)](https://hackathon.chiliz.com/)
+[![Built at Hackathon](https://img.shields.io/badge/Built_at-Chiliz_Hackathon-green.svg)](https://hackathon.chiliz.com/)
 
-> **The world's first comprehensive Web3 eSports ecosystem** - Where competitive gaming meets decentralized finance, community governance, and innovative blockchain technology.
+> **Vibe-first SportFi platform** - Connecting fans and athletes through prediction markets, skill showcases, community governance, and token rewards. Built for the Chiliz hackathon with pure passion and code.
 
-## 🌟 Revolutionary Platform Overview
+## 🚀 The SportFi Vision
 
-ChiliZ eSports Hub represents a paradigm shift in gaming platforms, combining the excitement of competitive eSports with the power of Web3 technology. Built on the Chiliz Spicy Testnet, our platform creates an unprecedented ecosystem where gamers can predict outcomes, showcase skills, govern platform decisions, learn through NFT courses, and trade virtual assets - all powered by CHZ tokens.
+**Fans deserve more than just watching.** They should own, earn, and govern the experiences they love.
 
-### 🎯 Core Innovation Pillars
+ChiliZ eSports Hub flips traditional fan engagement by putting supporters at the center of the action. Predict match outcomes, showcase your skills, vote on platform decisions, learn from pro players, and trade exclusive digital collectibles - all while earning CHZ tokens.
 
-- **🔮 Prediction Markets**: AI-powered betting on eSports matches with dynamic odds
-- **🎬 Skill Showcase**: Decentralized video platform with CHZ rewards for creators
-- **🏛️ Fan Token DAO**: Community-driven governance with weighted voting mechanisms
-- **🎓 Course NFTs**: Educational marketplace for gaming skills and blockchain knowledge
-- **🛒 Virtual Marketplace**: P2P trading platform for digital assets and collectibles
+### 🎯 Fan-First Features
 
-## 🏗️ Technical Architecture
+- **🔮 Fan Predictions**: Bet on your favorite teams with real CHZ rewards
+- **🎬 Creator Economy**: Upload gameplay, earn tokens, build your fanbase  
+- **🏛️ Fan Governance**: Vote with your tokens, shape the platform's future
+- **🎓 Skill Academy**: Learn from pros through exclusive NFT courses
+- **🛒 Fan Marketplace**: Trade rare collectibles and digital memorabilia
 
-### Frontend Stack
-```typescript
-// Modern React 18 with TypeScript
-├── React 18.2.0          // Component architecture with hooks
-├── TypeScript 5.0        // Type-safe development
-├── Vite 4.0             // Lightning-fast build tool
-├── Wouter               // Lightweight client-side routing
-├── TanStack Query       // Server state management
-├── shadcn/ui            // Premium component library
-├── Tailwind CSS         // Utility-first styling
-├── Framer Motion        // Smooth animations
-└── Lucide React         // Beautiful iconography
-```
+## 🏗️ Technical Stack
 
-### Backend Infrastructure
-```typescript
-// Node.js Express Server
-├── Express.js           // RESTful API framework
-├── TypeScript           // End-to-end type safety
-├── Drizzle ORM          // Type-safe database operations
-├── PostgreSQL           // Robust relational database
-├── WebSocket Server     // Real-time event broadcasting
-├── Multer               // File upload handling (500MB limit)
-├── IPFS Integration     // Decentralized content storage
-└── JWT Authentication   // Secure session management
-```
+**Built for speed, shipped with passion** - This SportFi platform leverages modern Web3 tech to create seamless fan experiences.
 
-### Blockchain Integration
-```solidity
-// Smart Contract Ecosystem
-├── PredictionMarket.sol  // Event betting and resolution
-├── FanTokenDAO.sol      // Governance and token management
-├── SkillShowcase.sol    // Video uploads with rewards
-├── CourseNFT.sol        // Educational NFT marketplace
-└── Marketplace.sol      // Virtual asset trading
-```
+### Core Technologies
+- **Frontend**: React 18 + TypeScript + Vite for lightning-fast development
+- **Backend**: Node.js + Express with real-time WebSocket connections
+- **Blockchain**: Chiliz Spicy Testnet with Thirdweb SDK integration
+- **Storage**: IPFS for decentralized content + PostgreSQL for app data
+- **UI/UX**: shadcn/ui components with Valorant-inspired gaming aesthetics
 
-### Infrastructure & DevOps
-```yaml
-# Development & Deployment
-├── Neon Database        # Serverless PostgreSQL
-├── NFT.Storage         # IPFS pinning service
-├── Thirdweb SDK        # Web3 development framework
-├── Chiliz Spicy Testnet # High-performance blockchain
-├── Replit Deployments  # Cloud hosting platform
-└── GitHub Actions      # CI/CD pipeline
-```
+### Smart Contracts
+- **PredictionMarket**: Fan betting with dynamic odds
+- **FanTokenDAO**: Community governance and voting
+- **SkillShowcase**: Creator rewards and verification
+- **CourseNFT**: Educational marketplace for athletes
+- **Marketplace**: P2P trading for digital collectibles
 
 ## 🚀 Quick Start Guide
 
@@ -115,277 +83,67 @@ Add Chiliz Spicy Testnet to MetaMask:
 }
 ```
 
-## 🎮 Platform Features Deep Dive
+## 🎮 For the Hackathon Community
 
-### 1. Prediction Markets 🔮
-**Revolutionary betting system with real-time odds calculation**
+### The SportFi Problem We're Solving
 
-```typescript
-// Smart contract interaction example
-const placeBet = async (eventId: number, option: number, amount: string) => {
-  const tx = await predictionMarket.placeBet(eventId, option, {
-    value: parseEther(amount)
-  });
-  return tx.wait();
-};
-```
+**Traditional fan engagement is broken.** Fans spend money on merchandise and tickets but have zero ownership in the experiences they love. Athletes create amazing content but rely on centralized platforms that extract most of the value.
 
-**Features:**
-- Dynamic odds based on betting volume
-- Multi-option events (not just binary)
-- Automated resolution with oracle integration
-- Instant payout system
-- Risk management algorithms
+### Our Hackathon Solution
 
-### 2. Skill Showcase Platform 🎬
-**Decentralized video platform rewarding quality content**
+**Direct fan-to-athlete economic relationships powered by CHZ tokens.**
 
-```typescript
-// IPFS upload with metadata
-const uploadVideo = async (file: File, metadata: VideoMetadata) => {
-  const ipfsHash = await ipfsService.uploadVideo(file, metadata);
-  const videoId = await skillShowcase.uploadVideo(ipfsHash, metadata.title, metadata.category);
-  return { videoId, ipfsHash };
-};
-```
+- **Prediction Markets**: Fans bet on their favorite athletes with real skin in the game
+- **Creator Economy**: Athletes earn CHZ directly from fans who value their content  
+- **Community Governance**: Platform decisions made by the people who use it most
+- **Skill Marketplace**: Athletes monetize their expertise through exclusive courses
+- **Digital Collectibles**: Rare moments and achievements become tradeable assets
 
-**Unique Features:**
-- Automatic CHZ rewards (0.01 CHZ per upload)
-- Community verification system
-- Like-based reward multipliers
-- Category-based discovery
-- Creator monetization tools
+### Why This Matters for SportFi
 
-### 3. Fan Token DAO 🏛️
-**Decentralized governance with sophisticated voting mechanisms**
+This platform demonstrates how Chiliz can power the entire fan experience economy - not just tokenized voting, but prediction markets, content creation, education, and commerce. It's a complete SportFi ecosystem that puts fans and athletes at the center.
 
-```typescript
-// Weighted voting implementation
-const vote = async (proposalId: number, support: boolean) => {
-  const voterBalance = await fanTokenDAO.balanceOf(userAddress);
-  const tx = await fanTokenDAO.vote(proposalId, support);
-  return { tx, votingPower: voterBalance };
-};
-```
+## 🎨 Hackathon Highlights
 
-**Governance Features:**
-- Token-weighted voting power
-- Proposal creation by community
-- Execution threshold mechanisms
-- Treasury management
-- Platform fee distribution
+### Vibe-First Design
+- **Dark Gaming Aesthetic**: Valorant-inspired UI with immersive purple/cyan gradients
+- **Real-Time Updates**: WebSocket connections for live betting and governance
+- **Mobile-First**: Responsive design that works on any device
+- **Smooth Animations**: Carousel interactions and smooth transitions
 
-### 4. Course NFT Marketplace 🎓
-**Educational ecosystem with blockchain-verified certificates**
+### Technical Innovation
+- **Smart Contract Architecture**: 5 interconnected contracts managing the entire ecosystem
+- **IPFS Integration**: Decentralized storage for videos and course content
+- **Token Economics**: CHZ rewards for creators, governance participation, and trading
+- **Real-Time Data**: Live updates for betting pools, video likes, and DAO votes
 
-**Smart Learning Features:**
-- NFT-based course ownership
-- Progress tracking on-chain
-- Creator royalty system
-- Skill verification badges
-- Community-driven content curation
+### Performance Focus
+- Lightning-fast loading (<2s)
+- Optimized smart contract interactions
+- Efficient database queries
+- Mobile-responsive across all devices
 
-### 5. Virtual Marketplace 🛒
-**P2P trading platform for digital assets**
+## 🤝 Built for the Community
 
-**Advanced Trading Features:**
-- Multi-asset support (NFTs, tokens, collectibles)
-- Automated escrow system
-- Price discovery mechanisms
-- Auction functionality
-- Cross-platform asset integration
-
-## 🔧 Advanced Configuration
-
-### Environment Variables
-```bash
-# Database Configuration
-DATABASE_URL="postgresql://user:pass@host:5432/db"
-
-# IPFS Storage
-NFT_STORAGE_API_KEY="your_nft_storage_key"
-
-# Thirdweb Integration
-THIRDWEB_SECRET_KEY="your_thirdweb_secret"
-VITE_THIRDWEB_CLIENT_ID="your_client_id"
-
-# Admin Configuration
-ADMIN_WALLET_ADDRESS="0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
-ADMIN_PRIVATE_KEY="your_admin_private_key"
-```
-
-### Smart Contract Addresses
-```typescript
-// Deployed on Chiliz Spicy Testnet
-export const CONTRACT_ADDRESSES = {
-  PREDICTION_MARKET: "0x...",
-  FAN_TOKEN_DAO: "0x...",
-  SKILL_SHOWCASE: "0x...",
-  COURSE_NFT: "0x...",
-  MARKETPLACE: "0x..."
-};
-```
-
-## 📊 Real-Time Data Flow
-
-### WebSocket Events
-```typescript
-// Real-time platform updates
-const wsEvents = {
-  'bet_placed': (data) => updateBettingPool(data),
-  'video_liked': (data) => incrementLikes(data),
-  'proposal_created': (data) => refreshGovernance(data),
-  'course_purchased': (data) => updateMarketplace(data),
-  'balance_updated': (data) => refreshWallet(data)
-};
-```
-
-### Database Schema
-```sql
--- Optimized for high-performance queries
-CREATE TABLE prediction_events (
-  id SERIAL PRIMARY KEY,
-  contract_event_id INTEGER UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  game VARCHAR(100) NOT NULL,
-  ipfs_hash VARCHAR(255),
-  end_time TIMESTAMP NOT NULL,
-  resolved BOOLEAN DEFAULT FALSE,
-  winning_option INTEGER,
-  total_pool DECIMAL(36,18) DEFAULT '0',
-  bet_count INTEGER DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Additional optimized tables for videos, DAO, courses, marketplace...
-```
-
-## 🎨 Design System & UI/UX
-
-### Valorant-Inspired Aesthetics
-```css
-/* Custom color palette */
-:root {
-  --primary-bg: #0A0618;
-  --accent-cyan: #00F5FF;
-  --accent-purple: #8B5CF6;
-  --accent-pink: #EC4899;
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-```
-
-**Design Principles:**
-- Dark, immersive gaming aesthetic
-- High contrast for accessibility
-- Smooth animations and transitions
-- Mobile-first responsive design
-- Gaming-focused iconography
-
-## 🛡️ Security & Best Practices
-
-### Smart Contract Security
-- Comprehensive unit test coverage (>95%)
-- Gas optimization strategies
-- Reentrancy protection
-- Access control mechanisms
-- Emergency pause functionality
-
-### Frontend Security
-- Input sanitization and validation
-- XSS protection
-- CSRF token implementation
-- Secure authentication flows
-- Rate limiting on API endpoints
-
-### Data Privacy
-- GDPR compliant data handling
-- Encrypted sensitive information
-- Minimal data collection principles
-- User consent management
-- Right to deletion implementation
-
-## 📈 Performance Metrics
-
-### Optimization Achievements
-- **Bundle Size**: <500KB gzipped
-- **First Contentful Paint**: <1.2s
-- **Time to Interactive**: <2.5s
-- **Core Web Vitals**: All green scores
-- **Database Queries**: <50ms average response time
-
-### Scalability Features
-- Horizontal database scaling ready
-- CDN integration for static assets
-- Lazy loading for components
-- Infinite scroll for large lists
-- Background job processing
-
-## 🤝 Contributing & Community
-
-### Development Workflow
-```bash
-# Create feature branch
-git checkout -b feature/amazing-new-feature
-
-# Make changes with comprehensive tests
-npm run test
-npm run lint
-npm run type-check
-
-# Submit pull request with detailed description
-git push origin feature/amazing-new-feature
-```
-
-### Community Channels
+### Connect with Fellow Builders
 - **Discord**: [Join our community](https://discord.gg/pCdBSkBUHn)
 - **Twitter**: [@Decent_Sanage](https://x.com/Decent_Sanage)
 - **Telegram**: [Development discussions](https://t.me/Avg_yuri_enjoyer)
 - **Reddit**: [r/nevergonnagiveyouup](https://www.reddit.com/r/nevergonnagiveyouup)
 
-## 🔮 Roadmap & Future Vision
+### Hackathon Spirit
+This project embodies the "vibe-first build jam" philosophy - built with passion, shipped with code, focused on real fan experiences. No gatekeeping, just shipping.
 
-### Phase 1: Foundation (Q1 2025) ✅
-- Core platform development
-- Smart contract deployment
-- Basic prediction markets
-- Video upload system
+## 🎯 The Vision
 
-### Phase 2: Enhancement (Q2 2025) 🚧
-- Advanced DAO governance
-- NFT course marketplace
-- Mobile application
-- API rate limiting
+**Traditional sports platforms extract value from fans. We return it.**
 
-### Phase 3: Expansion (Q3 2025) 📋
-- Cross-chain integration
-- AI-powered match predictions
-- VR/AR integration
-- Institutional partnerships
+ChiliZ eSports Hub creates direct economic relationships between fans and athletes, powered by the Chiliz network. It's not just another dApp - it's a complete SportFi ecosystem that shows what's possible when fans own their experiences.
 
-### Phase 4: Innovation (Q4 2025) 🔮
-- Metaverse integration
-- DeFi yield farming
-- Advanced analytics dashboard
-- Global tournament hosting
-
-## 📜 License & Legal
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-### Disclaimer
-ChiliZ eSports Hub is experimental software. Use at your own risk. The developers are not responsible for any financial losses incurred through platform usage.
+**For the culture. For the fans. For the future of sports.**
 
 ---
 
-**Built with ❤️ by the ChiliZ eSports Hub Team**
+Built with passion for the Chiliz Hackathon 🔥
 
-*Revolutionizing the intersection of gaming, blockchain, and community governance.*
-
----
-
-## 🎯 Why ChiliZ eSports Hub?
-
-In a world where traditional gaming platforms extract value from their communities, we're building something different. ChiliZ eSports Hub returns power to the players, rewards creativity, and creates sustainable economic models for the gaming ecosystem.
-
-**Join us in building the future of Web3 eSports.**
+*Where fans become stakeholders and athletes become entrepreneurs.*
