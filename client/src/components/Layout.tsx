@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import WalletConnect from "@/components/WalletConnect";
+import { client, chilizSpicyTestnet } from "@/lib/thirdweb";
 import { 
   Gamepad2, 
   Dice1, 
@@ -26,6 +27,12 @@ export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const account = useActiveAccount();
   const { connected } = useWebSocket();
+  
+  const { data: chzBalance, isLoading: balanceLoading } = useWalletBalance({
+    client,
+    chain: chilizSpicyTestnet,
+    address: account?.address,
+  });
 
   const navigation = [
     { name: "Predictions", href: "/", icon: Dice1 },
@@ -99,7 +106,12 @@ export default function Layout({ children }: LayoutProps) {
               {account && (
                 <div className="hidden sm:block text-sm">
                   <div className="text-gray-400">Balance:</div>
-                  <div className="text-cyan-400 font-bold">-- CHZ</div>
+                  <div className="text-cyan-400 font-bold">
+                    {balanceLoading ? 
+                      "Loading..." : 
+                      `${chzBalance ? parseFloat(chzBalance.displayValue).toFixed(2) : "0.00"} CHZ`
+                    }
+                  </div>
                 </div>
               )}
 
