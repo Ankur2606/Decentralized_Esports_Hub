@@ -2,15 +2,15 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useWeb3 } from "@/hooks/useWeb3";
+import { useActiveAccount } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import WalletConnect from "@/components/WalletConnect";
 import { 
   Gamepad2, 
   Dice1, 
   Video, 
   Vote, 
   ShoppingCart, 
-  Wallet, 
   Menu,
   X,
   Wifi,
@@ -24,7 +24,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const { account, balance, fanTokenBalance, isConnected, connectWallet } = useWeb3();
+  const account = useActiveAccount();
   const { connected } = useWebSocket();
 
   const navigation = [
@@ -96,25 +96,15 @@ export default function Layout({ children }: LayoutProps) {
               </div>
 
               {/* Balance Display */}
-              {isConnected && (
+              {account && (
                 <div className="hidden sm:block text-sm">
                   <div className="text-gray-400">Balance:</div>
-                  <div className="text-cyan-accent font-bold">{balance} CHZ</div>
+                  <div className="text-cyan-accent font-bold">-- CHZ</div>
                 </div>
               )}
 
-              {/* Wallet Button */}
-              <Button
-                onClick={connectWallet}
-                className="gaming-gradient hover:neon-cyan card-hover"
-                disabled={isConnected}
-              >
-                <Wallet className="h-4 w-4 mr-2" />
-                {isConnected 
-                  ? `${account?.slice(0, 6)}...${account?.slice(-4)}`
-                  : "Connect Wallet"
-                }
-              </Button>
+              {/* Wallet Connection */}
+              <WalletConnect />
 
               {/* Mobile Menu Button */}
               <Button
@@ -173,15 +163,15 @@ export default function Layout({ children }: LayoutProps) {
                     </Badge>
                   )}
                 </div>
-                {isConnected && (
+                {account && (
                   <div className="mt-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-400">CHZ:</span>
-                      <span className="text-cyan-accent font-bold">{balance}</span>
+                      <span className="text-cyan-accent font-bold">--</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">FTK:</span>
-                      <span className="text-warning-gold font-bold">{fanTokenBalance}</span>
+                      <span className="text-warning-gold font-bold">--</span>
                     </div>
                   </div>
                 )}

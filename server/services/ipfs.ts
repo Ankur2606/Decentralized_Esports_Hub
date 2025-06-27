@@ -1,15 +1,16 @@
 import { NFTStorage, File } from "nft.storage";
 
 class IPFSService {
-  private client: NFTStorage;
+  private client: NFTStorage | null = null;
 
   constructor() {
     const apiKey = process.env.NFT_STORAGE_KEY || process.env.NFT_STORAGE_API_KEY || "";
-    if (!apiKey) {
-      throw new Error("NFT_STORAGE_KEY environment variable is required");
+    if (apiKey) {
+      this.client = new NFTStorage({ token: apiKey });
+      console.log("IPFS service initialized with API key");
+    } else {
+      console.log("IPFS service initialized without API key - upload functions will be mocked");
     }
-    
-    this.client = new NFTStorage({ token: apiKey });
   }
 
   async uploadVideo(file: Express.Multer.File, metadata: {
@@ -18,6 +19,11 @@ class IPFSService {
     category: string;
     creator: string;
   }): Promise<string> {
+    if (!this.client) {
+      console.log("Mock uploadVideo:", { filename: file.originalname, metadata });
+      return "ipfs://mock-video-hash-" + Date.now();
+    }
+
     try {
       // Create File object from buffer
       const videoFile = new File([file.buffer], file.originalname, {
