@@ -485,19 +485,39 @@ export default function Dashboard() {
           <h2 className="text-3xl font-bold mb-8 text-white">Join Our Community</h2>
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <Button variant="outline" size="lg" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
+              onClick={() => window.open('https://discord.gg/pCdBSkBUHn', '_blank')}
+            >
               <ExternalLink className="mr-2 h-5 w-5" />
               Discord
             </Button>
-            <Button variant="outline" size="lg" className="border-purple-400 text-purple-400 hover:bg-purple-400/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-purple-400 text-purple-400 hover:bg-purple-400/10"
+              onClick={() => window.open('https://x.com/Decent_Sanage', '_blank')}
+            >
               <ExternalLink className="mr-2 h-5 w-5" />
               Twitter
             </Button>
-            <Button variant="outline" size="lg" className="border-pink-400 text-pink-400 hover:bg-pink-400/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-pink-400 text-pink-400 hover:bg-pink-400/10"
+              onClick={() => window.open('https://t.me/Avg_yuri_enjoyer', '_blank')}
+            >
               <ExternalLink className="mr-2 h-5 w-5" />
               Telegram
             </Button>
-            <Button variant="outline" size="lg" className="border-green-400 text-green-400 hover:bg-green-400/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-green-400 text-green-400 hover:bg-green-400/10"
+              onClick={() => window.open('https://www.reddit.com/r/nevergonnagiveyouup', '_blank')}
+            >
               <ExternalLink className="mr-2 h-5 w-5" />
               Reddit
             </Button>

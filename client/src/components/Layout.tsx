@@ -63,7 +63,6 @@ export default function Layout({ children }: LayoutProps) {
                 <Gamepad2 className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-xl font-bold text-white drop-shadow-lg hidden sm:block">
-                ChiliZ eSports Hub
               </h1>
             </Link>
 
