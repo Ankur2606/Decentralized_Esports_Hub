@@ -6,6 +6,7 @@ import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import WalletConnect from "@/components/WalletConnect";
 import { client, chilizSpicyTestnet } from "@/lib/thirdweb";
+import chilizLogo from "@assets/image_1751064271381.png";
 import { 
   Gamepad2, 
   Home,
@@ -121,6 +122,15 @@ export default function Layout({ children }: LayoutProps) {
               {/* Wallet Connection */}
               <WalletConnect />
 
+              {/* ChiliZ Logo */}
+              <div className="hidden sm:block">
+                <img 
+                  src={chilizLogo} 
+                  alt="ChiliZ eSports Hub" 
+                  className="h-8 w-8 object-contain"
+                />
+              </div>
+
               {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
@@ -164,7 +174,7 @@ export default function Layout({ children }: LayoutProps) {
               
               {/* Mobile Status */}
               <div className="pt-4 border-t border-cyan-400/20">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-sm text-gray-400">Status:</span>
                   {connected ? (
                     <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-400">
@@ -177,6 +187,15 @@ export default function Layout({ children }: LayoutProps) {
                       Offline
                     </Badge>
                   )}
+                </div>
+                
+                {/* Mobile ChiliZ Logo */}
+                <div className="flex justify-center mb-3">
+                  <img 
+                    src={chilizLogo} 
+                    alt="ChiliZ eSports Hub" 
+                    className="h-12 w-12 object-contain"
+                  />
                 </div>
                 {account && (
                   <div className="mt-2 text-sm">

@@ -1,7 +1,7 @@
 # 🔥 ChiliZ eSports Hub - SportFi Revolution for Fans & Athletes
 ![image](image.png)
 
-> **Vibe-first SportFi platform** - Connecting fans and athletes through prediction markets, skill showcases, community governance, and token rewards. Built for the Chiliz hackathon with pure passion and code.
+> **eSportFi platform** - Connecting fans and athletes through prediction markets, skill showcases, community governance, and token rewards. Built for the Chiliz hackathon with pure passion and code.
 
 ## 🚀 The SportFi Vision
 
