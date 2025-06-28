@@ -346,49 +346,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin - Contract deployment
-  app.post('/api/admin/deploy-contracts', async (req, res) => {
+  app.post('/api/admin/deploy-contract', async (req, res) => {
     try {
-      const { exec } = require('child_process');
-      const path = require('path');
+      const { contractName } = req.body;
+      const ADMIN_ADDRESS = "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa";
       
-      // Check if required environment variables are present
-      const requiredEnvVars = [
-        'THIRDWEB_SECRET_KEY',
-        'ADMIN_WALLET_ADDRESS'
-      ];
-
-      const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-
-      if (missingVars.length > 0) {
-        return res.status(400).json({ 
-          error: "Missing required environment variables", 
-          missing: missingVars 
-        });
+      if (!process.env.THIRDWEB_SECRET_KEY) {
+        return res.status(400).json({ error: "THIRDWEB_SECRET_KEY not found" });
       }
 
-      // Run the deployment script
-      const deployScript = path.join(process.cwd(), 'deploy.js');
-      
-      res.json({ message: "Contract deployment started. Check console for progress..." });
-      
-      exec(`node ${deployScript}`, (error, stdout, stderr) => {
-        if (error) {
-          console.error('❌ Deployment failed:', error);
-          broadcast({ event: "deployment:failed", data: { error: error.message } });
-          return;
+      if (!contractName) {
+        return res.status(400).json({ error: "Contract name required" });
+      }
+
+      const contractConfigs = {
+        PredictionMarket: {
+          file: "contracts/PredictionMarketSimple.sol",
+          args: [ADMIN_ADDRESS]
+        },
+        FanTokenDAO: {
+          file: "contracts/FanTokenDAOSimple.sol", 
+          args: [ADMIN_ADDRESS, "ChiliZ Fan Token", "FTK"]
+        },
+        SkillShowcase: {
+          file: "contracts/SkillShowcaseSimple.sol",
+          args: [ADMIN_ADDRESS]
+        },
+        CourseNFT: {
+          file: "contracts/CourseNFTSimple.sol",
+          args: [ADMIN_ADDRESS, "ChiliZ Course NFT", "COURSE", ADMIN_ADDRESS, "250"]
+        },
+        Marketplace: {
+          file: "contracts/MarketplaceSimple.sol",
+          args: [ADMIN_ADDRESS]
         }
-        
-        if (stderr) {
-          console.error('⚠️ Deployment warnings:', stderr);
-        }
-        
-        console.log(stdout);
-        console.log('✅ Contract deployment completed successfully!');
-        
-        // Broadcast success
-        broadcast({ event: "deployment:completed", data: { stdout } });
+      };
+
+      const config = contractConfigs[contractName as keyof typeof contractConfigs];
+      if (!config) {
+        return res.status(400).json({ error: "Invalid contract name" });
+      }
+
+      res.json({ 
+        message: `Starting deployment of ${contractName}...`,
+        adminAddress: ADMIN_ADDRESS,
+        constructorArgs: config.args
       });
-      
+
     } catch (error) {
       console.error("Deployment initiation failed:", error);
       res.status(500).json({ error: "Failed to start deployment" });
