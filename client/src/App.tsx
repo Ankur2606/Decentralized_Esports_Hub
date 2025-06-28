@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Videos from "@/pages/Videos";
 import DAO from "@/pages/DAO";
 import Marketplace from "@/pages/Marketplace";
+import Courses from "@/pages/Courses";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 
@@ -19,7 +20,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/betting" component={Home} />
-        <Route path="/courses" component={Home} />
+        <Route path="/courses" component={Courses} />
         <Route path="/videos" component={Videos} />
         <Route path="/dao" component={DAO} />
         <Route path="/marketplace" component={Marketplace} />

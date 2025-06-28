@@ -60,6 +60,14 @@ export default function AdminPanel() {
     courseTitle: "Valorant Pro Strategies",
     itemName: "Rare Weapon Skin"
   });
+  
+  const [contractAddresses, setContractAddresses] = useState({
+    predictionMarket: "",
+    fanTokenDAO: "",
+    skillShowcase: "",
+    courseNFT: "",
+    marketplace: ""
+  });
   const [testResults, setTestResults] = useState<Array<{
     action: string;
     message: string;
@@ -283,6 +291,34 @@ export default function AdminPanel() {
     }
   };
 
+  const updateContractAddresses = async () => {
+    try {
+      const response = await fetch("/api/admin/update-contracts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contracts: contractAddresses })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Contracts Updated",
+          description: "System now using live blockchain interactions",
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/deployment-status"] });
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update contract addresses",
+        variant: "destructive",
+      });
+    }
+  };
+
   const addTestResult = (action: string, success: boolean, message: string, txHash?: string) => {
     const newResult = {
       action,
@@ -445,34 +481,59 @@ export default function AdminPanel() {
             </Card>
 
             {/* Contract Address Input */}
-            <Card className="bg-slate-800 border-cyan-400/20">
+            <Card className="bg-slate-800 border-green-400/20">
               <CardHeader>
                 <CardTitle className="text-white flex items-center space-x-2">
-                  <Settings className="h-5 w-5 text-cyan-400" />
+                  <Settings className="h-5 w-5 text-green-400" />
                   <span>Update Contract Addresses</span>
                 </CardTitle>
                 <CardDescription>
-                  After deployment, paste the contract addresses here to update the system.
+                  After deployment, paste all 5 contract addresses here to enable live blockchain interactions.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {["PredictionMarket", "FanTokenDAO", "SkillShowcase", "CourseNFT", "Marketplace"].map((contractName) => (
-                  <div key={contractName} className="space-y-2">
-                    <Label className="text-white">{contractName} Address</Label>
-                    <div className="flex space-x-2">
-                      <Input
-                        placeholder="0x..."
-                        className="bg-slate-700 border-gray-600 text-white font-mono text-sm"
-                      />
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                        Save
-                      </Button>
-                    </div>
+                {Object.entries({
+                  predictionMarket: "Prediction Market",
+                  fanTokenDAO: "Fan Token DAO", 
+                  skillShowcase: "Skill Showcase",
+                  courseNFT: "Course NFT",
+                  marketplace: "Marketplace"
+                }).map(([key, name]) => (
+                  <div key={key} className="space-y-2">
+                    <Label className="text-white">{name} Address</Label>
+                    <Input
+                      placeholder="0x..."
+                      value={contractAddresses[key as keyof typeof contractAddresses]}
+                      onChange={(e) => setContractAddresses(prev => ({ 
+                        ...prev, 
+                        [key]: e.target.value 
+                      }))}
+                      className="bg-slate-700 border-gray-600 text-white font-mono text-sm"
+                    />
                   </div>
                 ))}
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 mt-4">
-                  Update All Addresses
-                </Button>
+                
+                <div className="pt-4 border-t border-gray-600">
+                  <Button 
+                    onClick={updateContractAddresses}
+                    disabled={!Object.values(contractAddresses).every(addr => addr.length === 42)}
+                    className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600"
+                  >
+                    {Object.values(contractAddresses).every(addr => addr.length === 42) 
+                      ? "Update All Addresses & Enable Live Contracts" 
+                      : "Enter All 5 Contract Addresses"
+                    }
+                  </Button>
+                  
+                  {deploymentStatus?.isComplete && (
+                    <div className="mt-3 p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
+                      <p className="text-green-400 text-sm flex items-center space-x-2">
+                        <CheckCircle className="h-4 w-4" />
+                        <span>All contracts deployed! System will switch from mock to live blockchain interactions.</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

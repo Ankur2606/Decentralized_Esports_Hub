@@ -425,6 +425,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update contract addresses endpoint
+  app.post('/api/admin/update-contracts', async (req, res) => {
+    try {
+      const { contracts } = req.body;
+      
+      // Validate contract addresses
+      const requiredContracts = ['predictionMarket', 'fanTokenDAO', 'skillShowcase', 'courseNFT', 'marketplace'];
+      const missingContracts = requiredContracts.filter(name => !contracts[name]);
+      
+      if (missingContracts.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Missing contract addresses: ${missingContracts.join(', ')}`
+        });
+      }
+
+      // Update the constants file with real addresses
+      const fs = require('fs');
+      const constantsPath = './shared/constants.ts';
+      const constantsContent = `// Auto-generated contract addresses - Updated ${new Date().toISOString()}
+export const CONTRACT_ADDRESSES = {
+  PREDICTION_MARKET: "${contracts.predictionMarket}",
+  FAN_TOKEN_DAO: "${contracts.fanTokenDAO}",
+  SKILL_SHOWCASE: "${contracts.skillShowcase}",
+  COURSE_NFT: "${contracts.courseNFT}",
+  MARKETPLACE: "${contracts.marketplace}",
+} as const;
+
+export const NETWORK_CONFIG = {
+  CHAIN_ID: 88882,
+  RPC_URL: "https://spicy-rpc.chiliz.com/",
+  EXPLORER_URL: "https://spicy-explorer.chiliz.com/",
+  NETWORK_NAME: "Chiliz Spicy Testnet",
+} as const;
+
+export const ADMIN_CONFIG = {
+  ADMIN_ADDRESS: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa",
+} as const;
+
+export const CONTRACT_PARAMS = {
+  MIN_BET_AMOUNT: "1000000000000000", // 0.001 CHZ
+  VIDEO_REWARD: "10000000000000000", // 0.01 CHZ
+  MIN_COURSE_PRICE: "100000000000000000", // 0.1 CHZ
+  PLATFORM_FEE: 250, // 2.5%
+} as const;
+
+export const DEPLOYMENT_STATUS = {
+  DEPLOYED: true,
+  DEPLOYMENT_DATE: "${new Date().toISOString()}",
+} as const;
+
+export const GAS_SETTINGS = {
+  MAX_FEE_PER_GAS: "25000000000", // 25 gwei
+  MAX_PRIORITY_FEE_PER_GAS: "2000000000", // 2 gwei
+  GAS_LIMIT: 500000,
+} as const;
+
+export const IPFS_CONFIG = {
+  GATEWAY_URL: "https://gateway.pinata.cloud/ipfs/",
+} as const;
+
+export const THIRDWEB_CONFIG = {
+  CLIENT_ID: process.env.VITE_THIRDWEB_CLIENT_ID || "",
+  SECRET_KEY: process.env.THIRDWEB_SECRET_KEY || "",
+} as const;
+`;
+
+      fs.writeFileSync(constantsPath, constantsContent);
+
+      res.json({
+        success: true,
+        message: "Contract addresses updated successfully. System will now use live blockchain interactions.",
+        contracts: contracts
+      });
+
+    } catch (error: any) {
+      console.error("Failed to update contract addresses:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Failed to update contract addresses"
+      });
+    }
+  });
+
   // Admin testing endpoints
   app.post('/api/admin/test/create-event', async (req, res) => {
     try {
