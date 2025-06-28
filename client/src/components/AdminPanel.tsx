@@ -19,7 +19,10 @@ import {
   Video,
   Users,
   ShoppingCart,
-  ExternalLink
+  ExternalLink,
+  BookOpen,
+  GraduationCap,
+  Activity
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -53,8 +56,17 @@ export default function AdminPanel() {
     eventName: "Team A vs Team B - Valorant Championship",
     tokenAmount: "100",
     coursePrice: "0.1",
-    videoTitle: "Pro Valorant Tips"
+    videoTitle: "Pro Valorant Tips",
+    courseTitle: "Valorant Pro Strategies",
+    itemName: "Rare Weapon Skin"
   });
+  const [testResults, setTestResults] = useState<Array<{
+    action: string;
+    message: string;
+    success: boolean;
+    timestamp: string;
+    txHash?: string;
+  }>>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { connected } = useWebSocket();
@@ -160,6 +172,9 @@ export default function AdminPanel() {
         })
       });
 
+      const result = await response.json();
+      addTestResult("Mint Fan Tokens", result.success, result.message, result.txHash);
+
       if (response.ok) {
         toast({
           title: "Fan Tokens Minted",
@@ -167,12 +182,116 @@ export default function AdminPanel() {
         });
       }
     } catch (error) {
+      addTestResult("Mint Fan Tokens", false, "Failed to mint tokens");
       toast({
         title: "Error",
         description: "Failed to mint tokens",
         variant: "destructive",
       });
     }
+  };
+
+  const testUploadVideo = async () => {
+    try {
+      const response = await fetch("/api/admin/test/upload-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: testData.videoTitle,
+          creator: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
+        })
+      });
+
+      const result = await response.json();
+      addTestResult("Upload Video", result.success, result.message, result.txHash);
+
+      if (response.ok) {
+        toast({
+          title: "Video Uploaded",
+          description: `Earned 0.01 CHZ reward for video upload`,
+        });
+      }
+    } catch (error) {
+      addTestResult("Upload Video", false, "Failed to upload video");
+      toast({
+        title: "Error",
+        description: "Failed to upload video",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const testCreateCourse = async () => {
+    try {
+      const response = await fetch("/api/admin/test/create-course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: testData.courseTitle,
+          price: testData.coursePrice,
+          creator: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
+        })
+      });
+
+      const result = await response.json();
+      addTestResult("Create Course NFT", result.success, result.message, result.txHash);
+
+      if (response.ok) {
+        toast({
+          title: "Course NFT Created",
+          description: `Course "${testData.courseTitle}" minted as NFT`,
+        });
+      }
+    } catch (error) {
+      addTestResult("Create Course NFT", false, "Failed to create course");
+      toast({
+        title: "Error",
+        description: "Failed to create course",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const testListItem = async () => {
+    try {
+      const response = await fetch("/api/admin/test/list-item", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: testData.itemName,
+          price: "0.05",
+          seller: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
+        })
+      });
+
+      const result = await response.json();
+      addTestResult("List Marketplace Item", result.success, result.message, result.txHash);
+
+      if (response.ok) {
+        toast({
+          title: "Item Listed",
+          description: `"${testData.itemName}" listed on marketplace`,
+        });
+      }
+    } catch (error) {
+      addTestResult("List Marketplace Item", false, "Failed to list item");
+      toast({
+        title: "Error",
+        description: "Failed to list item",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const addTestResult = (action: string, success: boolean, message: string, txHash?: string) => {
+    const newResult = {
+      action,
+      success,
+      message,
+      txHash,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    setTestResults(prev => [newResult, ...prev.slice(0, 9)]); // Keep last 10 results
   };
 
   const progressPercentage = deploymentStatus 
@@ -360,40 +479,223 @@ export default function AdminPanel() {
         </TabsContent>
 
         <TabsContent value="test" className="space-y-6">
-          <Card className="bg-slate-800 border-cyan-400/20">
+          {/* Contract Significance Guide */}
+          <Card className="bg-gradient-to-br from-purple-900/20 to-cyan-900/20 border-cyan-400/20">
             <CardHeader>
-              <CardTitle className="text-white">Admin Testing Functions</CardTitle>
+              <CardTitle className="text-white flex items-center space-x-2">
+                <BookOpen className="h-5 w-5 text-cyan-400" />
+                <span>Contract Guide & Testing</span>
+              </CardTitle>
               <CardDescription>
-                Create test content to demonstrate contract functionality
+                Understanding your eSports ecosystem contracts and how to test them
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-white">Create Test Betting Event</Label>
-                <Input
-                  value={testData.eventName}
-                  onChange={(e) => setTestData(prev => ({ ...prev, eventName: e.target.value }))}
-                  placeholder="Event name"
-                  className="bg-slate-700 border-gray-600 text-white"
-                />
-                <Button onClick={testCreateEvent} className="w-full bg-purple-600 hover:bg-purple-700">
-                  <Coins className="mr-2 h-4 w-4" />
-                  Create Test Event
-                </Button>
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* PredictionMarket */}
+                <Card className="bg-slate-800 border-purple-400/20">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-purple-500/20">
+                        <Coins className="h-5 w-5 text-purple-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">PredictionMarket</CardTitle>
+                        <CardDescription className="text-xs">eSports Betting & Predictions</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-xs text-gray-300">
+                      <p><strong>Purpose:</strong> Create prediction markets for eSports matches</p>
+                      <p><strong>Features:</strong> Event creation, betting, winnings distribution</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Event: Valorant Championship Final"
+                        value={testData.eventName}
+                        onChange={(e) => setTestData(prev => ({ ...prev, eventName: e.target.value }))}
+                        className="bg-slate-700 border-gray-600 text-white text-xs"
+                      />
+                      <Button onClick={testCreateEvent} size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                        Create Betting Event
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <div className="space-y-3">
-                <Label className="text-white">Mint Fan Tokens</Label>
-                <Input
-                  value={testData.tokenAmount}
-                  onChange={(e) => setTestData(prev => ({ ...prev, tokenAmount: e.target.value }))}
-                  placeholder="Token amount"
-                  className="bg-slate-700 border-gray-600 text-white"
-                />
-                <Button onClick={testMintTokens} className="w-full bg-blue-600 hover:bg-blue-700">
-                  <Users className="mr-2 h-4 w-4" />
-                  Mint FTK Tokens
-                </Button>
+                {/* FanTokenDAO */}
+                <Card className="bg-slate-800 border-blue-400/20">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-blue-500/20">
+                        <Users className="h-5 w-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">FanTokenDAO</CardTitle>
+                        <CardDescription className="text-xs">Community Governance</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-xs text-gray-300">
+                      <p><strong>Purpose:</strong> Fan token distribution and DAO voting</p>
+                      <p><strong>Features:</strong> Token minting, proposals, voting power</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Token amount (e.g., 100)"
+                        value={testData.tokenAmount}
+                        onChange={(e) => setTestData(prev => ({ ...prev, tokenAmount: e.target.value }))}
+                        className="bg-slate-700 border-gray-600 text-white text-xs"
+                      />
+                      <Button onClick={testMintTokens} size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                        Mint Fan Tokens
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* SkillShowcase */}
+                <Card className="bg-slate-800 border-green-400/20">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-green-500/20">
+                        <Video className="h-5 w-5 text-green-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">SkillShowcase</CardTitle>
+                        <CardDescription className="text-xs">Gaming Video Platform</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-xs text-gray-300">
+                      <p><strong>Purpose:</strong> Upload gaming clips and earn CHZ rewards</p>
+                      <p><strong>Features:</strong> Video uploads, likes, 0.01 CHZ per upload</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Video title: Epic Clutch Play"
+                        value={testData.videoTitle}
+                        onChange={(e) => setTestData(prev => ({ ...prev, videoTitle: e.target.value }))}
+                        className="bg-slate-700 border-gray-600 text-white text-xs"
+                      />
+                      <Button onClick={testUploadVideo} size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                        Upload Test Video
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* CourseNFT */}
+                <Card className="bg-slate-800 border-yellow-400/20">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-yellow-500/20">
+                        <GraduationCap className="h-5 w-5 text-yellow-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">CourseNFT</CardTitle>
+                        <CardDescription className="text-xs">Gaming Education NFTs</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-xs text-gray-300">
+                      <p><strong>Purpose:</strong> Create and sell gaming tutorial NFTs</p>
+                      <p><strong>Features:</strong> Course minting, purchasing, skill development</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Course: Valorant Pro Strategies"
+                        value={testData.courseTitle}
+                        onChange={(e) => setTestData(prev => ({ ...prev, courseTitle: e.target.value }))}
+                        className="bg-slate-700 border-gray-600 text-white text-xs"
+                      />
+                      <Button onClick={testCreateCourse} size="sm" className="w-full bg-yellow-600 hover:bg-yellow-700">
+                        Create Course NFT
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Marketplace */}
+                <Card className="bg-slate-800 border-cyan-400/20">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 rounded-lg bg-cyan-500/20">
+                        <ShoppingCart className="h-5 w-5 text-cyan-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-white text-sm">Marketplace</CardTitle>
+                        <CardDescription className="text-xs">NFT Trading Platform</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-xs text-gray-300">
+                      <p><strong>Purpose:</strong> Trade virtual items and gaming NFTs</p>
+                      <p><strong>Features:</strong> Item listing, purchasing, marketplace fees</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Item: Rare Weapon Skin"
+                        value={testData.itemName}
+                        onChange={(e) => setTestData(prev => ({ ...prev, itemName: e.target.value }))}
+                        className="bg-slate-700 border-gray-600 text-white text-xs"
+                      />
+                      <Button onClick={testListItem} size="sm" className="w-full bg-cyan-600 hover:bg-cyan-700">
+                        List Test Item
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Testing Results */}
+          <Card className="bg-slate-800 border-cyan-400/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center space-x-2">
+                <Activity className="h-5 w-5 text-cyan-400" />
+                <span>Testing Results</span>
+              </CardTitle>
+              <CardDescription>
+                Live contract interaction results and transaction status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {testResults.map((result, index) => (
+                  <div key={index} className={`p-3 rounded-lg border text-sm ${
+                    result.success 
+                      ? 'bg-green-500/10 border-green-400/20 text-green-400'
+                      : 'bg-red-500/10 border-red-400/20 text-red-400'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{result.action}</span>
+                      <span className="text-xs">{result.timestamp}</span>
+                    </div>
+                    <p className="text-xs mt-1">{result.message}</p>
+                    {result.txHash && (
+                      <a 
+                        href={`https://testnet.chiliscan.com/tx/${result.txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 text-xs underline"
+                      >
+                        View Transaction
+                      </a>
+                    )}
+                  </div>
+                ))}
+                {testResults.length === 0 && (
+                  <p className="text-gray-400 text-center py-8">
+                    No tests run yet. Use the testing functions above to interact with your contracts.
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

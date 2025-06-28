@@ -425,5 +425,161 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin testing endpoints
+  app.post('/api/admin/test/create-event', async (req, res) => {
+    try {
+      const { name, ipfsHash, endTime } = req.body;
+      const result = await web3Service.createEvent(name, ipfsHash, endTime);
+      
+      // Create in storage for UI display
+      await storage.createPredictionEvent({
+        contractEventId: Math.floor(Math.random() * 1000),
+        name,
+        description: "Test prediction event for demonstration",
+        game: "Valorant",
+        endTime: new Date(endTime * 1000).toISOString(),
+        totalPool: "0",
+        betCount: 0,
+        resolved: false,
+        winningOption: null,
+        ipfsHash
+      });
+
+      res.json({
+        success: true,
+        message: `Betting event "${name}" created successfully`,
+        txHash: typeof result === 'string' ? result : result?.hash || 'mock-tx-hash',
+        eventId: Math.floor(Math.random() * 1000)
+      });
+    } catch (error: any) {
+      console.error("Test create event failed:", error);
+      res.json({
+        success: false,
+        message: error.message || "Failed to create test event"
+      });
+    }
+  });
+
+  app.post('/api/admin/test/mint-tokens', async (req, res) => {
+    try {
+      const { address, amount } = req.body;
+      const result = await web3Service.executeAdminFunction('fanTokenDAO', 'mint', [address, amount]);
+      
+      res.json({
+        success: true,
+        message: `${amount} FTK tokens minted to ${address}`,
+        txHash: typeof result === 'string' ? result : 'mock-tx-hash'
+      });
+    } catch (error: any) {
+      console.error("Test mint tokens failed:", error);
+      res.json({
+        success: false,
+        message: error.message || "Failed to mint fan tokens"
+      });
+    }
+  });
+
+  app.post('/api/admin/test/upload-video', async (req, res) => {
+    try {
+      const { title, creator } = req.body;
+      const result = await web3Service.uploadVideo("QmTestVideo123", title, "Gaming");
+      
+      // Create in storage for UI display
+      await storage.createVideo({
+        contractVideoId: Math.floor(Math.random() * 1000),
+        title,
+        description: "Test gaming video for demonstration",
+        creator,
+        ipfsHash: "QmTestVideo123",
+        likes: 0,
+        views: 0,
+        verified: false,
+        category: "Gaming"
+      });
+
+      res.json({
+        success: true,
+        message: `Video "${title}" uploaded successfully. Earned 0.01 CHZ reward!`,
+        txHash: typeof result === 'number' ? 'mock-tx-hash' : 'mock-tx-hash',
+        videoId: Math.floor(Math.random() * 1000)
+      });
+    } catch (error: any) {
+      console.error("Test upload video failed:", error);
+      res.json({
+        success: false,
+        message: error.message || "Failed to upload test video"
+      });
+    }
+  });
+
+  app.post('/api/admin/test/create-course', async (req, res) => {
+    try {
+      const { title, price, creator } = req.body;
+      const priceInWei = (parseFloat(price) * 1e18).toString();
+      const result = await web3Service.lazyMintCourse("QmTestCourse123", priceInWei);
+      
+      // Create in storage for UI display
+      await storage.createCourseNft({
+        contractTokenId: Math.floor(Math.random() * 1000),
+        title,
+        description: "Test gaming course for demonstration",
+        creator,
+        price: priceInWei,
+        ipfsUri: "QmTestCourse123",
+        purchased: false,
+        purchaser: null,
+        duration: "2 hours",
+        rating: "4.8",
+        students: 0
+      });
+
+      res.json({
+        success: true,
+        message: `Course NFT "${title}" created successfully`,
+        txHash: 'mock-tx-hash',
+        tokenId: Math.floor(Math.random() * 1000)
+      });
+    } catch (error: any) {
+      console.error("Test create course failed:", error);
+      res.json({
+        success: false,
+        message: error.message || "Failed to create course NFT"
+      });
+    }
+  });
+
+  app.post('/api/admin/test/list-item', async (req, res) => {
+    try {
+      const { name, price, seller } = req.body;
+      const priceInWei = (parseFloat(price) * 1e18).toString();
+      const result = await web3Service.listItem(1, priceInWei); // Use dummy token ID
+      
+      // Create in storage for UI display
+      await storage.createMarketplaceItem({
+        contractItemId: Math.floor(Math.random() * 1000),
+        tokenId: 1,
+        seller,
+        price: priceInWei,
+        sold: false,
+        buyer: null,
+        itemType: "Weapon Skin",
+        description: "Test marketplace item for demonstration"
+      });
+
+      res.json({
+        success: true,
+        message: `Item "${name}" listed on marketplace for ${price} CHZ`,
+        txHash: 'mock-tx-hash',
+        itemId: Math.floor(Math.random() * 1000)
+      });
+    } catch (error: any) {
+      console.error("Test list item failed:", error);
+      res.json({
+        success: false,
+        message: error.message || "Failed to list marketplace item"
+      });
+    }
+  });
+
   return httpServer;
 }
