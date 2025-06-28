@@ -14,6 +14,7 @@ import { Dice1, TrendingUp, Wallet } from "lucide-react";
 
 interface PredictionEvent {
   id: number;
+  contractEventId: number;
   name: string;
   description: string;
   game: string;
@@ -51,11 +52,11 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         throw new Error("Please connect your MetaMask wallet first");
       }
 
-      // Prepare smart contract transaction
+      // Prepare smart contract transaction - use contractEventId instead of database ID
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
-        params: [BigInt(eventId), BigInt(option + 1)], // Convert to 1-based indexing
+        params: [BigInt(event.contractEventId || eventId), BigInt(option)], // Use contract event ID, not database ID
         value: toWei(amount)
       });
 
@@ -65,11 +66,11 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         account: account
       });
 
-      // Store bet data in backend
+      // Store bet data in backend using the correct contract event ID
       await apiRequest('/api/bet', 'POST', {
-        eventId,
+        eventId: event.contractEventId || eventId,
         userAddress: account.address,
-        option: option + 1,
+        option: option,
         amount,
         txHash: result.transactionHash
       });

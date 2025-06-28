@@ -64,11 +64,16 @@ export default function AdminTestPanel() {
         account: account!
       });
       
-      // Store in backend for UI display
+      // Use a proper event ID that matches the contract's sequential counter
+      // Contract starts event IDs from 1, so we'll use a simple counter
+      const contractEventId = 1; // For testing, use event ID 1 (the first created event)
+      
+      // Store in backend for UI display with actual contract event ID
       await apiRequest('/api/admin/test/create-event', 'POST', {
         name: data.name,
         description: data.description,
         endTime: data.endTime,
+        contractEventId: contractEventId,
         txHash: result.transactionHash
       });
       
@@ -94,7 +99,7 @@ export default function AdminTestPanel() {
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
-        params: [BigInt(data.eventId), BigInt(data.option)],
+        params: [BigInt(data.eventId), BigInt(data.option - 1)], // Convert to 0-based indexing for contract
         value: toWei(data.amount)
       });
       
