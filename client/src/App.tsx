@@ -1,7 +1,6 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ThirdwebProvider } from "thirdweb/react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
@@ -33,16 +32,14 @@ function Router() {
 
 function App() {
   return (
-    <ThirdwebProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <div className="dark">
-            <Toaster />
-            <Router />
-          </div>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThirdwebProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <div className="dark">
+          <Toaster />
+          <Router />
+        </div>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

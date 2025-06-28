@@ -2,10 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import WalletConnect from "@/components/WalletConnect";
-import { client, chilizSpicyTestnet } from "@/lib/thirdweb";
 import logoImage from "@assets/image_1751064571292.png";
 import { 
   Home,
@@ -27,14 +24,12 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const account = useActiveAccount();
   const { connected } = useWebSocket();
   
-  const { data: chzBalance, isLoading: balanceLoading } = useWalletBalance({
-    client,
-    chain: chilizSpicyTestnet,
-    address: account?.address,
-  });
+  // Mock wallet data for UI display
+  const account = null;
+  const chzBalance = null;
+  const balanceLoading = false;
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -107,21 +102,23 @@ export default function Layout({ children }: LayoutProps) {
                 )}
               </div>
 
-              {/* Balance Display */}
-              {account && (
-                <div className="hidden sm:block text-sm">
-                  <div className="text-gray-400">Balance:</div>
-                  <div className="text-cyan-400 font-bold">
-                    {balanceLoading ? 
-                      "Loading..." : 
-                      `${chzBalance ? parseFloat(chzBalance.displayValue).toFixed(2) : "0.00"} CHZ`
-                    }
-                  </div>
+              {/* Admin Status Display */}
+              <div className="hidden sm:block text-sm">
+                <div className="text-gray-400">Admin:</div>
+                <div className="text-cyan-400 font-bold">
+                  0x0734...47Fa
                 </div>
-              )}
+              </div>
 
-              {/* Wallet Connection */}
-              <WalletConnect />
+              {/* Admin Panel Link */}
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="bg-purple-600/20 border-purple-500/30 text-purple-300 hover:bg-purple-600/30"
+              >
+                <Link href="/admin">Admin Panel</Link>
+              </Button>
 
               {/* Mobile Menu Button */}
               <Button
