@@ -269,7 +269,12 @@ export default function AdminPanel() {
               <CardContent className="space-y-4">
                 {[
                   {
-                    name: "PredictionMarket",
+                    name: "PredictionMarket (Hardcoded Admin)",
+                    command: 'npx thirdweb deploy contracts/PredictionMarketHardcoded.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: 'No constructor arguments needed'
+                  },
+                  {
+                    name: "PredictionMarket (Parametrized)",
                     command: 'npx thirdweb deploy contracts/PredictionMarketSimple.sol -k "$THIRDWEB_SECRET_KEY"',
                     args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
                   },

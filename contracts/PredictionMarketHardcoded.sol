@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract PredictionMarket {
-    address public admin;
+    address public admin = 0x0734EdcC126a08375a08C02c3117d44B24dF47Fa;
     uint256 public eventCounter;
     uint256 public constant MIN_BET = 0.001 ether;
     
@@ -36,9 +36,8 @@ contract PredictionMarket {
         _;
     }
     
-    constructor(address _admin) {
-        require(_admin != address(0), "Admin cannot be zero address");
-        admin = _admin;
+    constructor() {
+        // Admin is hardcoded at declaration
     }
     
     function createEvent(string memory name, string memory ipfsHash, uint256 endTime) external onlyAdmin returns (uint256) {
@@ -50,22 +49,21 @@ contract PredictionMarket {
         newEvent.name = name;
         newEvent.ipfsHash = ipfsHash;
         newEvent.endTime = endTime;
-        newEvent.resolved = false;
         
         emit EventCreated(eventCounter, name, endTime);
         return eventCounter;
     }
     
     function placeBet(uint256 eventId, uint8 option) external payable eventExists(eventId) {
-        require(msg.value >= MIN_BET, "Bet too small");
-        require(option <= 1, "Invalid option");
-        require(block.timestamp < events[eventId].endTime, "Betting closed");
+        require(msg.value >= MIN_BET, "Bet below minimum");
+        require(option == 0 || option == 1, "Invalid option");
+        require(block.timestamp < events[eventId].endTime, "Event ended");
         require(!events[eventId].resolved, "Event resolved");
         
-        Event storage event_ = events[eventId];
-        event_.userBets[msg.sender][option] += msg.value;
-        event_.optionPools[option] += msg.value;
-        event_.totalPool += msg.value;
+        Event storage eventData = events[eventId];
+        eventData.userBets[msg.sender][option] += msg.value;
+        eventData.optionPools[option] += msg.value;
+        eventData.totalPool += msg.value;
         
         emit BetPlaced(eventId, msg.sender, option, msg.value);
     }
@@ -73,7 +71,7 @@ contract PredictionMarket {
     function resolveEvent(uint256 eventId, uint8 winningOption) external onlyAdmin eventExists(eventId) {
         require(!events[eventId].resolved, "Already resolved");
         require(block.timestamp >= events[eventId].endTime, "Event not ended");
-        require(winningOption <= 1, "Invalid option");
+        require(winningOption == 0 || winningOption == 1, "Invalid option");
         
         events[eventId].resolved = true;
         events[eventId].winningOption = winningOption;
@@ -82,25 +80,22 @@ contract PredictionMarket {
     }
     
     function withdrawWinnings(uint256 eventId) external eventExists(eventId) {
-        Event storage event_ = events[eventId];
-        require(event_.resolved, "Event not resolved");
-        require(!event_.hasWithdrawn[msg.sender], "Already withdrawn");
+        require(events[eventId].resolved, "Event not resolved");
+        require(!events[eventId].hasWithdrawn[msg.sender], "Already withdrawn");
         
-        uint256 userBet = event_.userBets[msg.sender][event_.winningOption];
+        Event storage eventData = events[eventId];
+        uint256 userBet = eventData.userBets[msg.sender][eventData.winningOption];
         require(userBet > 0, "No winning bet");
         
-        uint256 winningPool = event_.optionPools[event_.winningOption];
-        uint256 winnings = (userBet * event_.totalPool) / winningPool;
+        uint256 winnings = (userBet * eventData.totalPool) / eventData.optionPools[eventData.winningOption];
+        eventData.hasWithdrawn[msg.sender] = true;
         
-        event_.hasWithdrawn[msg.sender] = true;
-        
-        (bool success, ) = msg.sender.call{value: winnings}("");
-        require(success, "Transfer failed");
-        
+        payable(msg.sender).transfer(winnings);
         emit WinningsWithdrawn(eventId, msg.sender, winnings);
     }
     
-    function getEventDetails(uint256 eventId) external view eventExists(eventId) returns (
+    function getEvent(uint256 eventId) external view eventExists(eventId) returns (
+        uint256 id,
         string memory name,
         string memory ipfsHash,
         uint256 endTime,
@@ -108,14 +103,15 @@ contract PredictionMarket {
         uint8 winningOption,
         uint256 totalPool
     ) {
-        Event storage event_ = events[eventId];
+        Event storage eventData = events[eventId];
         return (
-            event_.name,
-            event_.ipfsHash,
-            event_.endTime,
-            event_.resolved,
-            event_.winningOption,
-            event_.totalPool
+            eventData.id,
+            eventData.name,
+            eventData.ipfsHash,
+            eventData.endTime,
+            eventData.resolved,
+            eventData.winningOption,
+            eventData.totalPool
         );
     }
     
