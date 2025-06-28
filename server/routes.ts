@@ -462,37 +462,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin testing endpoints
+  // Admin testing endpoints - for MetaMask transaction completion
   app.post('/api/admin/test/create-event', async (req, res) => {
     try {
-      const { name, ipfsHash, endTime } = req.body;
-      const result = await web3Service.createEvent(name, ipfsHash, endTime);
+      const { name, description, endTime, txHash } = req.body;
       
-      // Create in storage for UI display
-      await storage.createPredictionEvent({
-        contractEventId: Math.floor(Math.random() * 1000),
-        name,
-        description: "Test prediction event for demonstration",
-        game: "Valorant",
-        endTime: new Date(endTime * 1000).toISOString(),
+      // Create event in storage for UI display
+      const eventData = {
+        contractEventId: Math.floor(Math.random() * 1000) + 1,
+        name: name,
+        description: description || "Test prediction event",
+        game: "eSports",
+        endTime: new Date(Date.now() + (parseInt(endTime || "24") * 3600000)),
         totalPool: "0",
         betCount: 0,
         resolved: false,
         winningOption: null,
-        ipfsHash
-      });
+        ipfsHash: description || name
+      };
+      
+      const event = await storage.createPredictionEvent(eventData);
 
       res.json({
         success: true,
-        message: `Betting event "${name}" created successfully`,
-        txHash: typeof result === 'string' ? result : result?.hash || 'mock-tx-hash',
-        eventId: Math.floor(Math.random() * 1000)
+        message: `Event "${name}" created successfully on blockchain`,
+        txHash: txHash || 'blockchain-tx-hash',
+        event
       });
     } catch (error: any) {
-      console.error("Test create event failed:", error);
-      res.json({
+      console.error("Admin create event failed:", error);
+      res.status(500).json({
         success: false,
-        message: error.message || "Failed to create test event"
+        message: error.message || "Failed to create event"
       });
     }
   });

@@ -64,9 +64,11 @@ export default function AdminTestPanel() {
         account: account!
       });
       
-      // Also store in backend
+      // Store in backend for UI display
       await apiRequest('/api/admin/test/create-event', 'POST', {
-        ...data,
+        name: data.name,
+        description: data.description,
+        endTime: data.endTime,
         txHash: result.transactionHash
       });
       
