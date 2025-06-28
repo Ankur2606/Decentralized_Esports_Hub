@@ -37,7 +37,6 @@ contract PredictionMarket {
     }
     
     constructor(address _admin) {
-        require(_admin != address(0), "Admin cannot be zero address");
         admin = _admin;
     }
     

@@ -16,19 +16,7 @@ Each deployment command opens a browser interface for MetaMask interaction.
 ### Deployment Commands:
 
 ```bash
-# Deploy PredictionMarket (Hardcoded Admin - RECOMMENDED)
-npx thirdweb deploy contracts/PredictionMarketHardcoded.sol -k "$THIRDWEB_SECRET_KEY"
-```
-
-**When browser opens:**
-- Network: Select **Chiliz Spicy Testnet**
-- Constructor Arguments: **None needed** (admin hardcoded)
-- Click **Deploy Now**
-- Approve in MetaMask
-
-**Alternative with Constructor Parameter:**
-```bash
-# Deploy PredictionMarket (Parametrized)
+# Deploy PredictionMarket
 npx thirdweb deploy contracts/PredictionMarketSimple.sol -k "$THIRDWEB_SECRET_KEY"
 ```
 
