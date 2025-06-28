@@ -214,63 +214,148 @@ export default function AdminPanel() {
             <CardHeader>
               <CardTitle className="text-white flex items-center space-x-2">
                 <Rocket className="h-5 w-5 text-cyan-400" />
-                <span>Quick Deployment Guide</span>
+                <span>MetaMask Deployment Guide</span>
               </CardTitle>
               <CardDescription>
-                Ready-to-deploy contracts optimized for Chiliz Spicy Testnet
+                Browser-based deployment with MetaMask integration
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="bg-blue-500/10 border border-blue-400/20 rounded-lg p-4">
+                <h4 className="font-medium text-white mb-2">Deployment Process:</h4>
+                <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+                  <li>Run deployment command in terminal</li>
+                  <li>Browser opens with Thirdweb interface</li>
+                  <li>Select "Chiliz Spicy Testnet" network</li>
+                  <li>Enter constructor arguments</li>
+                  <li>Click "Deploy Now" button</li>
+                  <li>Approve transaction in MetaMask</li>
+                  <li>Copy contract address from success page</li>
+                </ol>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium text-white">Network Configuration</h4>
+                  <h4 className="font-medium text-white">Network Settings</h4>
                   <div className="text-sm text-gray-400 space-y-1">
                     <p>• Chain ID: 88882</p>
                     <p>• RPC: https://spicy-rpc.chiliz.com/</p>
-                    <p>• Explorer: https://spicy.chz.tools/</p>
+                    <p>• Admin: 0x0734EdcC126a08375a08C02c3117d44B24dF47Fa</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-medium text-white">Gas Optimization</h4>
+                  <h4 className="font-medium text-white">Gas Costs</h4>
                   <div className="text-sm text-gray-400 space-y-1">
+                    <p>• Deployment: ~0.001-0.003 CHZ</p>
                     <p>• Min bet: 0.001 CHZ</p>
                     <p>• Upload reward: 0.01 CHZ</p>
-                    <p>• Max gas cost: 0.002 CHZ</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {contracts.map((contract) => {
-              const Icon = contract.icon;
-              return (
-                <Card key={contract.name} className="bg-slate-800 border-cyan-400/20 hover:border-cyan-400/40 transition-colors">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-cyan-500/20">
-                        <Icon className="h-5 w-5 text-cyan-400" />
+          <div className="space-y-4">
+            {/* Deployment Commands */}
+            <Card className="bg-slate-800 border-cyan-400/20">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <Terminal className="h-5 w-5 text-cyan-400" />
+                  <span>Deployment Commands</span>
+                </CardTitle>
+                <CardDescription>
+                  Run these commands one by one. Each opens MetaMask for deployment approval.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  {
+                    name: "PredictionMarket",
+                    command: 'npx thirdweb deploy contracts/PredictionMarketSimple.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                  },
+                  {
+                    name: "FanTokenDAO",
+                    command: 'npx thirdweb deploy contracts/FanTokenDAOSimple.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Fan Token", "FTK"]'
+                  },
+                  {
+                    name: "SkillShowcase",
+                    command: 'npx thirdweb deploy contracts/SkillShowcaseSimple.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                  },
+                  {
+                    name: "CourseNFT",
+                    command: 'npx thirdweb deploy contracts/CourseNFTSimple.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Course NFT", "COURSE", "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", 250]'
+                  },
+                  {
+                    name: "Marketplace",
+                    command: 'npx thirdweb deploy contracts/MarketplaceSimple.sol -k "$THIRDWEB_SECRET_KEY"',
+                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                  }
+                ].map((contract, index) => (
+                  <div key={contract.name} className="bg-slate-700/50 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-white">{index + 1}. {contract.name}</h4>
+                      <Button
+                        onClick={() => copyToClipboard(contract.command)}
+                        size="sm"
+                        variant="ghost"
+                        className="text-cyan-400 hover:text-cyan-300"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <div>
+                        <Label className="text-gray-400 text-xs">Terminal Command:</Label>
+                        <code className="block bg-black/30 p-2 rounded text-xs text-green-400 font-mono">
+                          {contract.command}
+                        </code>
                       </div>
                       <div>
-                        <CardTitle className="text-white text-sm">{contract.name}</CardTitle>
-                        <CardDescription className="text-xs">{contract.description}</CardDescription>
+                        <Label className="text-gray-400 text-xs">Constructor Arguments (paste in browser):</Label>
+                        <code className="block bg-black/30 p-2 rounded text-xs text-yellow-400 font-mono">
+                          {contract.args}
+                        </code>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {contract.testFeatures.map((feature, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span className="text-xs text-gray-400">{feature}</span>
-                        </div>
-                      ))}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Contract Address Input */}
+            <Card className="bg-slate-800 border-cyan-400/20">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <Settings className="h-5 w-5 text-cyan-400" />
+                  <span>Update Contract Addresses</span>
+                </CardTitle>
+                <CardDescription>
+                  After deployment, paste the contract addresses here to update the system.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {["PredictionMarket", "FanTokenDAO", "SkillShowcase", "CourseNFT", "Marketplace"].map((contractName) => (
+                  <div key={contractName} className="space-y-2">
+                    <Label className="text-white">{contractName} Address</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        placeholder="0x..."
+                        className="bg-slate-700 border-gray-600 text-white font-mono text-sm"
+                      />
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                        Save
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  </div>
+                ))}
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 mt-4">
+                  Update All Addresses
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
