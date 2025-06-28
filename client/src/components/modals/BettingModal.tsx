@@ -6,9 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { useWeb3 } from "@/hooks/useWeb3";
-import { prepareContractCall, sendTransaction, toWei } from "thirdweb";
-import { Dice1, TrendingUp, Wallet } from "lucide-react";
+import { Dice1, TrendingUp } from "lucide-react";
 
 interface PredictionEvent {
   id: number;
@@ -36,7 +34,6 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
   const [betAmount, setBetAmount] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isConnected, userAddress, account, connectWallet, getContracts } = useWeb3();
 
   const placeBetMutation = useMutation({
     mutationFn: async ({ eventId, option, amount }: { 

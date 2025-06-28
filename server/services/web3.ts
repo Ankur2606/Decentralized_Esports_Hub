@@ -35,21 +35,29 @@ class Web3Service {
   private isAdmin = false;
 
   constructor() {
-    console.log("Initializing Web3Service with live contracts...");
+    // Initialize admin account if private key is provided
+    if (process.env.ADMIN_PRIVATE_KEY) {
+      this.adminAccount = privateKeyToAccount({
+        client,
+        privateKey: process.env.ADMIN_PRIVATE_KEY,
+      });
+      this.isAdmin = true;
+      console.log("Web3Service initialized with admin account");
+    } else {
+      console.log("Web3Service initialized without admin account - using mock functions");
+    }
     
-    // Always initialize contracts with live addresses
     this.initializeContracts();
   }
 
   private async initializeContracts() {
     try {
-      // Use deployed contract addresses
-      const { CONTRACT_ADDRESSES } = await import('../../shared/constants.js');
-      const PREDICTION_MARKET_ADDRESS = CONTRACT_ADDRESSES.PREDICTION_MARKET;
-      const FAN_TOKEN_DAO_ADDRESS = CONTRACT_ADDRESSES.FAN_TOKEN_DAO;
-      const SKILL_SHOWCASE_ADDRESS = CONTRACT_ADDRESSES.SKILL_SHOWCASE;
-      const COURSE_NFT_ADDRESS = CONTRACT_ADDRESSES.COURSE_NFT;
-      const MARKETPLACE_ADDRESS = CONTRACT_ADDRESSES.MARKETPLACE;
+      // Contract addresses will be provided by user - using environment or constants
+      const PREDICTION_MARKET_ADDRESS = process.env.PREDICTION_MARKET_ADDRESS;
+      const FAN_TOKEN_DAO_ADDRESS = process.env.FAN_TOKEN_DAO_ADDRESS;
+      const SKILL_SHOWCASE_ADDRESS = process.env.SKILL_SHOWCASE_ADDRESS;
+      const COURSE_NFT_ADDRESS = process.env.COURSE_NFT_ADDRESS;
+      const MARKETPLACE_ADDRESS = process.env.MARKETPLACE_ADDRESS;
 
       if (PREDICTION_MARKET_ADDRESS) {
         this.contracts.predictionMarket = getContract({
@@ -136,36 +144,16 @@ class Web3Service {
 
   // Prediction Market Functions
   async createEvent(name: string, ipfsHash: string, endTime: number): Promise<string> {
-    console.log("Creating prediction event:", name);
-    
-    if (!this.contracts.predictionMarket) {
-      throw new Error("PredictionMarket contract not initialized");
+    if (!this.isAdmin) {
+      console.log("Mock: Creating prediction event:", name);
+      return "mock_tx_hash_" + Date.now();
     }
-    
-    // Return contract call data for frontend to execute
-    return JSON.stringify({
-      contractAddress: this.contracts.predictionMarket.address,
-      functionName: "createEvent",
-      args: [name, ipfsHash, endTime],
-      needsUserTransaction: true
-    });
+    return await this.executeAdminFunction("predictionMarket", "createEvent", [name, ipfsHash, endTime]);
   }
 
   async placeBet(eventId: number, option: number, amount: string): Promise<string> {
-    console.log("Placing bet on event", eventId, "option", option, "amount", amount);
-    
-    if (!this.contracts.predictionMarket) {
-      throw new Error("PredictionMarket contract not initialized");
-    }
-    
-    // Return contract call data for frontend to execute
-    return JSON.stringify({
-      contractAddress: this.contracts.predictionMarket.address,
-      functionName: "placeBet",
-      args: [eventId, option],
-      value: amount,
-      needsUserTransaction: true
-    });
+    console.log("Mock: Placing bet on event", eventId, "option", option, "amount", amount);
+    return "mock_tx_hash_" + Date.now();
   }
 
   async resolveEvent(eventId: number, winningOption: number): Promise<string> {
