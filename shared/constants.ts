@@ -1,0 +1,107 @@
+// Contract addresses - update after deployment
+export const CONTRACT_ADDRESSES = {
+  PREDICTION_MARKET: process.env.PREDICTION_MARKET_ADDRESS || "",
+  FAN_TOKEN_DAO: process.env.FAN_TOKEN_DAO_ADDRESS || "",
+  SKILL_SHOWCASE: process.env.SKILL_SHOWCASE_ADDRESS || "",
+  COURSE_NFT: process.env.COURSE_NFT_ADDRESS || "",
+  MARKETPLACE: process.env.MARKETPLACE_ADDRESS || "",
+};
+
+// Network configuration
+export const NETWORK_CONFIG = {
+  chainId: 88882,
+  name: "Chiliz Spicy Testnet",
+  rpcUrl: "https://spicy-rpc.chiliz.com/",
+  blockExplorerUrl: "https://testnet.chiliscan.com/",
+  nativeCurrency: {
+    name: "CHZ",
+    symbol: "CHZ",
+    decimals: 18,
+  },
+};
+
+// Admin configuration
+export const ADMIN_CONFIG = {
+  address: "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa",
+  privateKey: process.env.ADMIN_PRIVATE_KEY || "",
+};
+
+// Contract parameters
+export const CONTRACT_PARAMS = {
+  PREDICTION_MARKET: {
+    MIN_BET: "0.001", // CHZ
+  },
+  SKILL_SHOWCASE: {
+    UPLOAD_REWARD: "0.01", // CHZ
+  },
+  COURSE_NFT: {
+    MIN_PRICE: "0.1", // CHZ
+    ROYALTY_BPS: 250, // 2.5%
+  },
+  MARKETPLACE: {
+    PLATFORM_FEE_PERCENT: 250, // 2.5%
+  },
+  FAN_TOKEN_DAO: {
+    VOTING_PERIOD: 7 * 24 * 60 * 60, // 7 days in seconds
+  },
+};
+
+// Deployment status tracking
+export const DEPLOYMENT_STATUS = {
+  contracts: [
+    {
+      name: "PredictionMarket",
+      file: "contracts/PredictionMarketSimple.sol",
+      deployed: false,
+      address: "",
+      deploymentTx: "",
+    },
+    {
+      name: "FanTokenDAO",
+      file: "contracts/FanTokenDAOSimple.sol", 
+      deployed: false,
+      address: "",
+      deploymentTx: "",
+    },
+    {
+      name: "SkillShowcase",
+      file: "contracts/SkillShowcaseSimple.sol",
+      deployed: false,
+      address: "",
+      deploymentTx: "",
+    },
+    {
+      name: "CourseNFT", 
+      file: "contracts/CourseNFTSimple.sol",
+      deployed: false,
+      address: "",
+      deploymentTx: "",
+    },
+    {
+      name: "Marketplace",
+      file: "contracts/MarketplaceSimple.sol",
+      deployed: false,
+      address: "",
+      deploymentTx: "",
+    },
+  ],
+};
+
+// Gas optimization settings
+export const GAS_SETTINGS = {
+  gasLimit: 3000000,
+  maxFeePerGas: "20000000000", // 20 gwei
+  maxPriorityFeePerGas: "2000000000", // 2 gwei
+};
+
+// IPFS configuration
+export const IPFS_CONFIG = {
+  gateway: "https://gateway.pinata.cloud/ipfs/",
+  apiKey: process.env.NFT_STORAGE_API_KEY || "",
+};
+
+// Thirdweb configuration
+export const THIRDWEB_CONFIG = {
+  clientId: process.env.VITE_THIRDWEB_CLIENT_ID || "",
+  secretKey: process.env.THIRDWEB_SECRET_KEY || "",
+};

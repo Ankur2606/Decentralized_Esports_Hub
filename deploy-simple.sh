@@ -1,79 +1,55 @@
 #!/bin/bash
 
-# ChiliZ eSports Hub - Simple Contract Deployment
-echo "🎯 ChiliZ eSports Hub - Contract Deployment"
-echo "📋 Admin Address: 0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
-echo "🌐 Network: Chiliz Spicy Testnet (Chain ID: 88882)"
-echo ""
+# Set admin address
+ADMIN_ADDRESS="0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"
 
-# Set environment variable to suppress warnings
-export FOUNDRY_DISABLE_NIGHTLY_WARNING=true
-
-echo "🚀 Starting contract deployment..."
+echo "🚀 Starting contract deployment to Chiliz Spicy Testnet..."
+echo "Admin Address: $ADMIN_ADDRESS"
 echo ""
 
 # Function to deploy a contract
 deploy_contract() {
-    local contract_name=$1
-    local contract_file=$2
+    local contract_file=$1
+    local contract_name=$2
+    local constructor_args=$3
     
-    echo "📦 Deploying $contract_name..."
-    echo "Command: npx thirdweb deploy $contract_file -k \$THIRDWEB_SECRET_KEY"
+    echo "📄 Deploying $contract_name..."
+    echo "Constructor args: $constructor_args"
     
-    # Try deployment with timeout
-    timeout 300 npx thirdweb deploy "$contract_file" -k "$THIRDWEB_SECRET_KEY" &
-    local deploy_pid=$!
+    # Deploy using thirdweb
+    npx thirdweb deploy "$contract_file" -k "$THIRDWEB_SECRET_KEY" --constructor-args "$constructor_args"
     
-    echo "Deployment started (PID: $deploy_pid)"
-    echo "This will open in your browser for configuration..."
-    echo ""
-    
-    # Wait for deployment or timeout
-    if wait $deploy_pid; then
-        echo "✅ $contract_name deployment command completed"
+    if [ $? -eq 0 ]; then
+        echo "✅ $contract_name deployed successfully!"
     else
-        echo "⏱️ $contract_name deployment timed out - check browser"
+        echo "❌ Failed to deploy $contract_name"
+        exit 1
     fi
-    
-    echo "Constructor args for $contract_name:"
-    case $contract_name in
-        "PredictionMarket")
-            echo '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
-            ;;
-        "FanTokenDAO")
-            echo '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Fan Token", "FTK"]'
-            ;;
-        "SkillShowcase")
-            echo '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
-            ;;
-        "CourseNFT")
-            echo '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Course NFT", "COURSE", "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", 250]'
-            ;;
-        "Marketplace")
-            echo '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
-            ;;
-    esac
     echo ""
 }
 
 # Deploy all contracts
-echo "Starting individual contract deployments..."
+echo "Starting deployment sequence..."
 echo ""
 
-deploy_contract "PredictionMarket" "contracts/PredictionMarket.sol"
-deploy_contract "FanTokenDAO" "contracts/FanTokenDAO.sol"
-deploy_contract "SkillShowcase" "contracts/SkillShowcase.sol"
-deploy_contract "CourseNFT" "contracts/CourseNFT.sol"
-deploy_contract "Marketplace" "contracts/Marketplace.sol"
+# 1. PredictionMarket
+deploy_contract "contracts/PredictionMarketSimple.sol" "PredictionMarket" "[\"$ADMIN_ADDRESS\"]"
 
-echo "📝 Next Steps:"
-echo "1. Complete deployment in browser tabs that opened"
-echo "2. Select 'Chiliz Spicy Testnet' for each contract"
-echo "3. Use the constructor arguments shown above"
-echo "4. Copy contract addresses from Thirdweb dashboard"
-echo "5. Update client/src/lib/constants.ts with new addresses"
+# 2. FanTokenDAO
+deploy_contract "contracts/FanTokenDAOSimple.sol" "FanTokenDAO" "[\"$ADMIN_ADDRESS\", \"ChiliZ Fan Token\", \"FTK\"]"
+
+# 3. SkillShowcase
+deploy_contract "contracts/SkillShowcaseSimple.sol" "SkillShowcase" "[\"$ADMIN_ADDRESS\"]"
+
+# 4. CourseNFT
+deploy_contract "contracts/CourseNFTSimple.sol" "CourseNFT" "[\"$ADMIN_ADDRESS\", \"ChiliZ Course NFT\", \"COURSE\", \"$ADMIN_ADDRESS\", 250]"
+
+# 5. Marketplace
+deploy_contract "contracts/MarketplaceSimple.sol" "Marketplace" "[\"$ADMIN_ADDRESS\"]"
+
+echo "🎉 All contracts deployed successfully!"
 echo ""
-echo "🔗 Useful Links:"
-echo "- Thirdweb Dashboard: https://thirdweb.com/dashboard"
-echo "- Chiliz Explorer: https://spicy.chz.tools/"
-echo "- Admin Panel: http://localhost:5000/admin"
+echo "Next steps:"
+echo "1. Copy the contract addresses from the deployment output"
+echo "2. Update the constants file in your application"
+echo "3. Test the functionality in the admin panel"
