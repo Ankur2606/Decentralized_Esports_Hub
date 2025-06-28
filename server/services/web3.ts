@@ -52,6 +52,7 @@ class Web3Service {
 
   private async initializeContracts() {
     try {
+      // Contract addresses will be provided by user - using environment or constants
       const PREDICTION_MARKET_ADDRESS = process.env.PREDICTION_MARKET_ADDRESS;
       const FAN_TOKEN_DAO_ADDRESS = process.env.FAN_TOKEN_DAO_ADDRESS;
       const SKILL_SHOWCASE_ADDRESS = process.env.SKILL_SHOWCASE_ADDRESS;

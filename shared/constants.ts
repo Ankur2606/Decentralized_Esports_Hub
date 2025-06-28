@@ -1,4 +1,4 @@
-// Contract addresses - update after deployment
+// Contract addresses - awaiting complete addresses from user deployment
 export const CONTRACT_ADDRESSES = {
   PREDICTION_MARKET: process.env.PREDICTION_MARKET_ADDRESS || "",
   FAN_TOKEN_DAO: process.env.FAN_TOKEN_DAO_ADDRESS || "",
