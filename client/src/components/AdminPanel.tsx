@@ -227,11 +227,20 @@ export default function AdminPanel() {
                   <li>Run deployment command in terminal</li>
                   <li>Browser opens with Thirdweb interface</li>
                   <li>Select "Chiliz Spicy Testnet" network</li>
-                  <li>Enter constructor arguments</li>
+                  <li>Enter constructor arguments (individual values, no quotes/brackets)</li>
                   <li>Click "Deploy Now" button</li>
                   <li>Approve transaction in MetaMask</li>
                   <li>Copy contract address from success page</li>
                 </ol>
+              </div>
+              <div className="bg-red-500/10 border border-red-400/20 rounded-lg p-4">
+                <h4 className="font-medium text-white mb-2">Important: Address Format</h4>
+                <p className="text-sm text-gray-300">
+                  Enter the admin address as: <code className="text-yellow-400">0x0734EdcC126a08375a08C02c3117d44B24dF47Fa</code>
+                </p>
+                <p className="text-xs text-red-300 mt-1">
+                  Do NOT use brackets, quotes, or array format. Enter raw address value only.
+                </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -271,27 +280,32 @@ export default function AdminPanel() {
                   {
                     name: "PredictionMarket",
                     command: 'npx thirdweb deploy contracts/PredictionMarketSimple.sol -k "$THIRDWEB_SECRET_KEY"',
-                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                    args: '0x0734EdcC126a08375a08C02c3117d44B24dF47Fa',
+                    note: 'Enter address WITHOUT quotes or brackets'
                   },
                   {
                     name: "FanTokenDAO",
                     command: 'npx thirdweb deploy contracts/FanTokenDAOSimple.sol -k "$THIRDWEB_SECRET_KEY"',
-                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Fan Token", "FTK"]'
+                    args: '0x0734EdcC126a08375a08C02c3117d44B24dF47Fa\n"ChiliZ Fan Token"\n"FTK"',
+                    note: 'Enter each parameter on separate lines'
                   },
                   {
                     name: "SkillShowcase",
                     command: 'npx thirdweb deploy contracts/SkillShowcaseSimple.sol -k "$THIRDWEB_SECRET_KEY"',
-                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                    args: '0x0734EdcC126a08375a08C02c3117d44B24dF47Fa',
+                    note: 'Enter address WITHOUT quotes or brackets'
                   },
                   {
                     name: "CourseNFT",
                     command: 'npx thirdweb deploy contracts/CourseNFTSimple.sol -k "$THIRDWEB_SECRET_KEY"',
-                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", "ChiliZ Course NFT", "COURSE", "0x0734EdcC126a08375a08C02c3117d44B24dF47Fa", 250]'
+                    args: '0x0734EdcC126a08375a08C02c3117d44B24dF47Fa\n"ChiliZ Course NFT"\n"COURSE"\n0x0734EdcC126a08375a08C02c3117d44B24dF47Fa\n250',
+                    note: 'Enter each parameter on separate lines'
                   },
                   {
                     name: "Marketplace",
                     command: 'npx thirdweb deploy contracts/MarketplaceSimple.sol -k "$THIRDWEB_SECRET_KEY"',
-                    args: '["0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"]'
+                    args: '0x0734EdcC126a08375a08C02c3117d44B24dF47Fa',
+                    note: 'Enter address WITHOUT quotes or brackets'
                   }
                 ].map((contract, index) => (
                   <div key={contract.name} className="bg-slate-700/50 rounded-lg p-4 space-y-3">
@@ -314,10 +328,13 @@ export default function AdminPanel() {
                         </code>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs">Constructor Arguments (paste in browser):</Label>
-                        <code className="block bg-black/30 p-2 rounded text-xs text-yellow-400 font-mono">
+                        <Label className="text-gray-400 text-xs">Constructor Arguments (enter in browser form):</Label>
+                        <code className="block bg-black/30 p-2 rounded text-xs text-yellow-400 font-mono whitespace-pre-line">
                           {contract.args}
                         </code>
+                        <div className="text-xs text-orange-400 mt-1">
+                          {contract.note}
+                        </div>
                       </div>
                     </div>
                   </div>
