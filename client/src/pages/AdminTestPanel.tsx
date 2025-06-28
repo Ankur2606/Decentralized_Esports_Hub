@@ -91,6 +91,7 @@ export default function AdminTestPanel() {
     mutationFn: async (data: typeof betData) => {
       if (!wallet) throw new Error("Wallet not connected");
       
+      // Create transaction with proper error handling
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
@@ -98,7 +99,7 @@ export default function AdminTestPanel() {
         value: toWei(data.amount)
       });
       
-      const result = await sendTransaction({
+      const { transactionHash } = await sendTransaction({
         transaction,
         account: account!
       });
@@ -109,10 +110,10 @@ export default function AdminTestPanel() {
         option: data.option,
         amount: data.amount,
         userAddress: account?.address,
-        txHash: result.transactionHash
+        txHash: transactionHash
       });
       
-      return result;
+      return { transactionHash };
     },
     onSuccess: () => {
       toast({ title: "Bet placed with CHZ payment" });

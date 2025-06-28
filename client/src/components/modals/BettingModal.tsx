@@ -51,7 +51,7 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         throw new Error("Please connect your MetaMask wallet first");
       }
 
-      // Prepare smart contract transaction
+      // Prepare smart contract transaction using correct method signature
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
@@ -60,7 +60,7 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
       });
 
       // Send transaction via MetaMask
-      const result = await sendTransaction({
+      const { transactionHash } = await sendTransaction({
         transaction,
         account: account
       });
@@ -71,10 +71,10 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         userAddress: account.address,
         option: option + 1,
         amount,
-        txHash: result.transactionHash
+        txHash: transactionHash
       });
       
-      return result;
+      return { transactionHash };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
