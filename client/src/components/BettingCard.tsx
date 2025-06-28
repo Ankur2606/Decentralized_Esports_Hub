@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import BettingModalFixed from "@/components/modals/BettingModalFixed";
+import BettingModal from "@/components/modals/BettingModal";
 import { Clock, Users, DollarSign, Trophy } from "lucide-react";
 
 interface PredictionEvent {
   id: number;
-  contractEventId: number;
   name: string;
   description: string;
   game: string;
@@ -148,7 +147,7 @@ export default function BettingCard({ event }: BettingCardProps) {
         </Card>
       </div>
 
-      <BettingModalFixed
+      <BettingModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         event={event}
