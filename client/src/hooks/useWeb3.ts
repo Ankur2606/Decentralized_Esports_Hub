@@ -17,7 +17,8 @@ export function useWeb3() {
         if (response.ok) {
           const userData = await response.json();
           setBalance(userData.user?.chzBalance || "125.45");
-          setFanTokenBalance(userData.user?.fanTokenBalance || "1250");
+          // Check for real Fan Token balance from minting
+          setFanTokenBalance(userData.user?.fanTokenBalance || "100");
         }
       }
     } catch (error) {

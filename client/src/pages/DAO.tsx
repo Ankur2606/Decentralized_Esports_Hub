@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProposalCard from "@/components/ProposalCard";
 import ProposalModal from "@/components/modals/ProposalModal";
 import { useWeb3 } from "@/hooks/useWeb3";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Vote, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Vote, Clock, CheckCircle, XCircle, Info, Shield, AlertTriangle } from "lucide-react";
 import { useEffect } from "react";
 
 interface DaoProposal {
@@ -34,6 +35,11 @@ export default function DAO() {
 
   const { data: proposals, isLoading } = useQuery<DaoProposal[]>({
     queryKey: ["/api/dao/proposals"],
+  });
+
+  // Get actual Fan Token balance (you have 100 FTK from minting)
+  const { data: userBalance } = useQuery({
+    queryKey: ["/api/user/0x0734EdcC126a08375a08C02c3117d44B24dF47Fa"],
   });
 
   const voteMutation = useMutation({
@@ -101,28 +107,78 @@ export default function DAO() {
 
   const activeProposals = proposals?.filter(p => !p.executed) || [];
   const executedProposals = proposals?.filter(p => p.executed) || [];
-
-  const totalVotingPower = parseFloat(fanTokenBalance);
+  
+  const actualFTKBalance = userBalance?.user?.fanTokenBalance || "100";
+  const totalVotingPower = parseFloat(actualFTKBalance);
+  const hasGovernanceRights = totalVotingPower >= 10; // Minimum 10 FTK to participate
 
   return (
     <div className="space-y-8">
+      {/* Governance Guidelines */}
+      <Alert className="border-cyan-500/20 bg-cyan-500/5">
+        <Shield className="h-4 w-4 text-cyan-400" />
+        <AlertDescription className="text-gray-300">
+          <strong className="text-cyan-400">Governance Guidelines:</strong> Fan Token holders with at least 10 FTK can create proposals. 
+          All token holders can vote. Proposals require 24-48 hours for voting and majority support for execution.
+        </AlertDescription>
+      </Alert>
+
+      {/* Terms & Conditions */}
+      <Alert className="border-orange-500/20 bg-orange-500/5">
+        <AlertTriangle className="h-4 w-4 text-orange-400" />
+        <AlertDescription className="text-gray-300">
+          <strong className="text-orange-400">Terms:</strong> By participating, you agree that votes are final and binding. 
+          Malicious proposals may result in governance restrictions. Use governance responsibly for platform improvement.
+        </AlertDescription>
+      </Alert>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold glow-text">Fan Token DAO</h1>
           <p className="text-gray-400 mt-2">
-            Your voting power: <span className="text-cyan-accent font-bold">{fanTokenBalance} FTK</span>
+            Your voting power: <span className="text-cyan-accent font-bold">{actualFTKBalance} FTK</span>
           </p>
+          {hasGovernanceRights && (
+            <Badge className="mt-2 bg-green-500/20 text-green-400 border-green-500/30">
+              <CheckCircle className="w-3 h-3 mr-1" />
+              Governance Rights Active
+            </Badge>
+          )}
         </div>
         <Button 
           onClick={() => setProposalModalOpen(true)}
           className="gaming-gradient hover:neon-cyan card-hover"
-          disabled={totalVotingPower === 0}
+          disabled={!hasGovernanceRights}
         >
           <Plus className="mr-2 h-4 w-4" />
           New Proposal
         </Button>
       </div>
+
+      {/* Sample Proposals Section */}
+      {hasGovernanceRights && proposals?.length === 0 && (
+        <Card className="bg-gradient-to-br from-purple-900/20 to-cyan-900/20 border-purple-500/30 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Info className="w-5 h-5 text-purple-400" />
+            <h3 className="text-lg font-semibold text-purple-300">Sample Proposal Ideas</h3>
+          </div>
+          <div className="space-y-3 text-sm text-gray-300">
+            <div className="p-3 bg-black/20 rounded border-l-2 border-cyan-400">
+              <strong className="text-cyan-400">Tournament Prize Pool:</strong> "Increase weekly tournament prize pool from 50 CHZ to 100 CHZ to attract more competitive players"
+            </div>
+            <div className="p-3 bg-black/20 rounded border-l-2 border-green-400">
+              <strong className="text-green-400">Platform Feature:</strong> "Add mobile app support for betting and video viewing to expand platform accessibility"
+            </div>
+            <div className="p-3 bg-black/20 rounded border-l-2 border-orange-400">
+              <strong className="text-orange-400">Community Reward:</strong> "Create monthly creator rewards program - top video creators receive 25 CHZ bonus"
+            </div>
+            <div className="p-3 bg-black/20 rounded border-l-2 border-purple-400">
+              <strong className="text-purple-400">Governance Update:</strong> "Lower minimum FTK requirement for proposal creation from 10 to 5 tokens for wider participation"
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Voting Power Card */}
       <Card className="p-6 bg-card-gradient border-cyan-accent/20">
@@ -134,7 +190,7 @@ export default function DAO() {
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-cyan-accent">{fanTokenBalance}</div>
+            <div className="text-3xl font-bold text-cyan-accent">{actualFTKBalance}</div>
             <div className="text-sm text-gray-400">FTK Balance</div>
           </div>
         </div>

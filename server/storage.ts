@@ -79,12 +79,21 @@ export class MemStorage implements IStorage {
   }
 
   async updateUserBalance(address: string, chzBalance: string, fanTokenBalance: string): Promise<User> {
-    const user = this.users.get(address);
-    if (!user) throw new Error("User not found");
-    
-    const updatedUser = { ...user, chzBalance, fanTokenBalance };
-    this.users.set(address, updatedUser);
-    return updatedUser;
+    let user = this.users.get(address);
+    if (!user) {
+      // Create user if doesn't exist
+      user = await this.createUser({
+        address,
+        username: null,
+        chzBalance,
+        fanTokenBalance
+      });
+    } else {
+      const updatedUser = { ...user, chzBalance, fanTokenBalance };
+      this.users.set(address, updatedUser);
+      user = updatedUser;
+    }
+    return user;
   }
 
   // Prediction Events
