@@ -52,12 +52,13 @@ class Web3Service {
 
   private async initializeContracts() {
     try {
-      // Contract addresses will be provided by user - using environment or constants
-      const PREDICTION_MARKET_ADDRESS = process.env.PREDICTION_MARKET_ADDRESS;
-      const FAN_TOKEN_DAO_ADDRESS = process.env.FAN_TOKEN_DAO_ADDRESS;
-      const SKILL_SHOWCASE_ADDRESS = process.env.SKILL_SHOWCASE_ADDRESS;
-      const COURSE_NFT_ADDRESS = process.env.COURSE_NFT_ADDRESS;
-      const MARKETPLACE_ADDRESS = process.env.MARKETPLACE_ADDRESS;
+      // Use deployed contract addresses from constants
+      const { CONTRACT_ADDRESSES } = await import('../../shared/constants.js');
+      const PREDICTION_MARKET_ADDRESS = CONTRACT_ADDRESSES.PREDICTION_MARKET;
+      const FAN_TOKEN_DAO_ADDRESS = CONTRACT_ADDRESSES.FAN_TOKEN_DAO;
+      const SKILL_SHOWCASE_ADDRESS = CONTRACT_ADDRESSES.SKILL_SHOWCASE;
+      const COURSE_NFT_ADDRESS = CONTRACT_ADDRESSES.COURSE_NFT;
+      const MARKETPLACE_ADDRESS = CONTRACT_ADDRESSES.MARKETPLACE;
 
       if (PREDICTION_MARKET_ADDRESS) {
         this.contracts.predictionMarket = getContract({

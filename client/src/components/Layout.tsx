@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import WalletConnect from "@/components/WalletConnect";
-import { client, chilizSpicyTestnet } from "@/lib/thirdweb";
+import { client, chilizSpicy } from "@/lib/thirdweb";
 import logoImage from "@assets/image_1751064571292.png";
 import { 
   Home,
@@ -32,7 +32,7 @@ export default function Layout({ children }: LayoutProps) {
   
   const { data: chzBalance, isLoading: balanceLoading } = useWalletBalance({
     client,
-    chain: chilizSpicyTestnet,
+    chain: chilizSpicy,
     address: account?.address,
   });
 
