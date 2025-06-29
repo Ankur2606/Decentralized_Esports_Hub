@@ -58,8 +58,8 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
       // Prepare smart contract transaction using correct method signature
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
-        method: "placeBet",
-        params: [BigInt(blockchainEventId), BigInt(option + 1)], // Convert to 1-based indexing
+        method: "function placeBet(uint256 eventId, uint8 option) payable",
+        params: [BigInt(blockchainEventId+1), BigInt(option)], // Convert to 1-based indexing
         value: toWei(amount)
       });
 

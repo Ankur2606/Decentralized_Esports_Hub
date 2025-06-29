@@ -341,7 +341,7 @@ export default function AdminTestPanel() {
               />
             </div>
             <div>
-              <Label htmlFor="betOption">Option (1 or 2)</Label>
+              <Label htmlFor="betOption">Option (0 or 1)</Label>
               <Input
                 id="betOption"
                 type="number"
