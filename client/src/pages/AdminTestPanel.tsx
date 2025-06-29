@@ -98,7 +98,7 @@ export default function AdminTestPanel() {
       // Create transaction with proper error handling
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
-        method: "function placeBet(uint256 eventId, uint8 option) payable",
+        method: "placeBet",
         params: [BigInt(data.eventId), BigInt(data.option)],
         value: toWei(data.amount)
       });

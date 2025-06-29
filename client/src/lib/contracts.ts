@@ -185,15 +185,21 @@ export const marketplaceContract = getContract({
   abi: marketplaceABI,
 });
 
-// Utility function to get the latest event counter from blockchain
+// Helper function to get the latest event counter from blockchain
 export async function getLatestEventCounter(): Promise<bigint> {
   try {
-    const data = await readContract({
+    const result = await readContract({
       contract: predictionMarketContract,
-      method: "eventCounter",
-      params: [],
+      method: "eventCounter"
     });
-    return data;
+    return result;
+  } catch (error) {
+    console.error("Failed to get event counter:", error);
+    return BigInt(1); // Fallback to 1 if unable to read from contract
+  }
+}
+
+
   } catch (error) {
     console.error("Error reading event counter:", error);
     return BigInt(0);
