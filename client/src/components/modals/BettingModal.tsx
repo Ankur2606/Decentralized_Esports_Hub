@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveAccount, useActiveWallet } from "thirdweb/react";
 import { prepareContractCall, sendTransaction, toWei } from "thirdweb";
-import { predictionMarketContract } from "@/lib/contracts";
+import { predictionMarketContract, getLatestEventCounter } from "@/lib/contracts";
 import { apiRequest } from "@/lib/queryClient";
 import { Dice1, TrendingUp, Wallet } from "lucide-react";
 
@@ -51,11 +51,14 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         throw new Error("Please connect your MetaMask wallet first");
       }
 
+      // Use the contract event ID from the event data (blockchain ID, not database ID)
+      const blockchainEventId = event.contractEventId || eventId;
+      
       // Prepare smart contract transaction using correct method signature
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
-        params: [BigInt(eventId), BigInt(option + 1)], // Convert to 1-based indexing
+        params: [BigInt(blockchainEventId), BigInt(option + 1)], // Convert to 1-based indexing
         value: toWei(amount)
       });
 
@@ -65,12 +68,13 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
         account: account
       });
 
-      // Store bet data in backend
+      // Store bet data in backend with required odds field
       await apiRequest('/api/bet', 'POST', {
         eventId,
         userAddress: account.address,
         option: option + 1,
         amount,
+        odds: "2.0", // Default odds to satisfy Zod validation
         txHash: transactionHash
       });
       

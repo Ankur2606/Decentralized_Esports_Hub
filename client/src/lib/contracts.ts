@@ -1,4 +1,4 @@
-import { getContract } from "thirdweb";
+import { getContract, readContract } from "thirdweb";
 import { client, chilizSpicy, CONTRACT_ADDRESSES } from "./thirdweb";
 
 // Contract ABI fragments for the functions we need
@@ -33,6 +33,13 @@ const predictionMarketABI = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "eventCounter",
+    "inputs": [],
+    "outputs": [{"type": "uint256"}],
+    "stateMutability": "view"
   }
 ] as const;
 
@@ -177,3 +184,18 @@ export const marketplaceContract = getContract({
   address: CONTRACT_ADDRESSES.MARKETPLACE,
   abi: marketplaceABI,
 });
+
+// Utility function to get the latest event counter from blockchain
+export async function getLatestEventCounter(): Promise<bigint> {
+  try {
+    const data = await readContract({
+      contract: predictionMarketContract,
+      method: "eventCounter",
+      params: [],
+    });
+    return data;
+  } catch (error) {
+    console.error("Error reading event counter:", error);
+    return BigInt(0);
+  }
+}
