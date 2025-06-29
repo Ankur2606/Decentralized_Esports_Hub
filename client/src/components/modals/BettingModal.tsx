@@ -55,18 +55,11 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
       // Use the contract event ID from the event data (blockchain ID, not database ID)
       const blockchainEventId = event.contractEventId || eventId;
       
-      console.log('Betting parameters:', {
-        blockchainEventId,
-        option,
-        amount,
-        eventName: event.name
-      });
-      
       // Prepare smart contract transaction using correct method signature
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
-        params: [BigInt(blockchainEventId), BigInt(option)], // 0-based option indexing (0 = first team, 1 = second team)
+        params: [BigInt(blockchainEventId), BigInt(option + 1)], // Convert to 1-based indexing
         value: toWei(amount)
       });
 
@@ -80,7 +73,7 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
       await apiRequest('/api/bet', 'POST', {
         eventId,
         userAddress: account.address,
-        option: option+1 ,
+        option: option + 1,
         amount,
         odds: "2.0", // Default odds to satisfy Zod validation
         txHash: transactionHash
