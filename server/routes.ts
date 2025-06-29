@@ -55,24 +55,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/bet', async (req, res) => {
     try {
-      const betData = insertBetSchema.parse(req.body);
+      // Extract transaction hash from request body
+      const { txHash, contractEventId, ...restData } = req.body;
+      const betData = insertBetSchema.parse(restData);
       
-      // Place bet on blockchain
-      const txHash = await web3Service.placeBet(
-        betData.eventId!,
-        betData.option,
-        betData.amount
-      );
-      
-      // Store bet in database
-      const bet = await storage.createBet(betData);
+      // Store bet in database (transaction already executed by frontend)
+      const bet = await storage.createBet({
+        ...betData,
+        odds: "1.85" // Default odds for now
+      });
       
       // Update event totals
       const event = await storage.getPredictionEvent(betData.eventId!);
       if (event) {
         await storage.updatePredictionEvent(betData.eventId!, {
           totalPool: (parseFloat(event.totalPool || "0") + parseFloat(betData.amount)).toString(),
-          betCount: event.betCount + 1
+          betCount: (event.betCount || 0) + 1
         });
       }
 

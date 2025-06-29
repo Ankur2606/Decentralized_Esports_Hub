@@ -95,7 +95,7 @@ export default function AdminTestPanel() {
       const transactionBet = prepareContractCall({
         contract: predictionMarketContract,
         method: "function placeBet(uint256 eventId, uint8 option) payable",
-        params: [BigInt(data.eventId), BigInt(data.option)],
+        params: [BigInt(data.eventId), BigInt(data.option)] ,
         value: toWei(data.amount)
       });
       
