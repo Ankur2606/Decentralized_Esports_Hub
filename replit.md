@@ -117,6 +117,7 @@ Changelog:
 - June 28, 2025. Successfully deployed all five contracts to Chiliz Spicy Testnet using MetaMask workflow, created comprehensive testing interface with contract significance guides, implemented backend testing APIs for all contract functions, and completed user-friendly testing dashboard with real-time transaction monitoring
 - June 28, 2025. Fixed backend API errors, resolved courses page routing bug, and created contract address integration system ready to receive deployed contract addresses and switch from mock to live blockchain interactions
 - June 28, 2025. Removed admin deployment interface and implemented realistic testing platform with proper MetaMask integration, live contract addresses integration, and real CHZ transaction flows for all platform functions including betting, event creation, token minting, and skill showcase funding
+- June 28, 2025. Fixed bet placement function errors by correcting Thirdweb transaction handling, resolved event ID mapping issues between frontend database IDs and blockchain contract IDs, and eliminated duplicate blockchain calls causing error alerts despite successful CHZ transactions
 
 ## User Preferences
 
