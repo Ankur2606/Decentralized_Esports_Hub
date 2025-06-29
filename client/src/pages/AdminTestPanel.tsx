@@ -20,7 +20,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { prepareContractCall, sendTransaction, toWei } from "thirdweb";
-import { predictionMarketContract, fanTokenDAOContract, skillShowcaseContract, getLatestEventCounter } from "@/lib/contracts";
+import { predictionMarketContract, fanTokenDAOContract, skillShowcaseContract } from "@/lib/contracts";
 import { useActiveWallet } from "thirdweb/react";
 
 export default function AdminTestPanel() {
@@ -64,16 +64,13 @@ export default function AdminTestPanel() {
         account: account!
       });
 
-      // Get the actual event ID from blockchain using event counter
-      const eventCounter = await getLatestEventCounter();
-      
-      // Store in backend for UI display with actual blockchain event ID
+      // Store in backend for UI display - event ID will be extracted from transaction logs
       await apiRequest('/api/admin/test/create-event', 'POST', {
         name: data.name,
         description: data.description,
         endTime: data.endTime,
         txHash: result.transactionHash,
-        contractEventId: Number(eventCounter) // Use actual blockchain event ID
+        contractEventId: Date.now() % 1000 // Temporary ID until blockchain sync
       });
       
       return result;
@@ -98,7 +95,7 @@ export default function AdminTestPanel() {
       // Create transaction with proper error handling
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
-        method: "function placeBet(uint256 eventId, uint8 option) payable",
+        method: "placeBet",
         params: [BigInt(data.eventId), BigInt(data.option)],
         value: toWei(data.amount)
       });
@@ -341,7 +338,7 @@ export default function AdminTestPanel() {
               />
             </div>
             <div>
-              <Label htmlFor="betOption">Option (1 or 2)</Label>
+              <Label htmlFor="betOption">Option (0 or 1)</Label>
               <Input
                 id="betOption"
                 type="number"

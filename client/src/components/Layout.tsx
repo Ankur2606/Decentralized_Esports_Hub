@@ -6,7 +6,7 @@ import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import WalletConnect from "@/components/WalletConnect";
 import { client, chilizSpicy } from "@/lib/thirdweb";
-import logoImage from "@assets/image_1751064571292.png";
+// Logo removed - asset no longer available
 import { 
   Home,
   Trophy,
