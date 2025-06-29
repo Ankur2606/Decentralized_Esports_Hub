@@ -92,16 +92,16 @@ export default function AdminTestPanel() {
       if (!wallet) throw new Error("Wallet not connected");
       
       // Create transaction with proper error handling
-      const transaction = prepareContractCall({
+      const transactionBet = prepareContractCall({
         contract: predictionMarketContract,
-        method: "placeBet",
+        method: "function placeBet(uint256 eventId, uint8 option) payable",
         params: [BigInt(data.eventId), BigInt(data.option)],
         value: toWei(data.amount)
       });
       
       const { transactionHash } = await sendTransaction({
-        transaction,
-        account: account!
+        transaction: transactionBet,
+        account: account
       });
       
       // Store bet in backend
