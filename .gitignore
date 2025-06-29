@@ -4,27 +4,3 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-
-# Development artifacts
-cache/
-out/
-attached_assets/
-*.png
-*.jpg
-*.jpeg
-
-# Deployment files
-deploy-*.js
-deploy-*.sh
-fix-*.sh
-foundry.toml
-manual-deploy.md
-
-# Contract deployment artifacts
-*_DEPLOYED.md
-*_GUIDE.md
-*_STATUS.md
-*_READY.md
-*_ADDRESSES.md
-*_FORM.md
-*_INTEGRATION.md

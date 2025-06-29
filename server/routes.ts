@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (event) {
         await storage.updatePredictionEvent(betData.eventId!, {
           totalPool: (parseFloat(event.totalPool || "0") + parseFloat(betData.amount)).toString(),
-          betCount: (event.betCount || 0) + 1
+          betCount: event.betCount + 1
         });
       }
 
@@ -158,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Video not found' });
       }
 
-      const updatedVideo = await storage.updateVideoLikes(videoId, (video.likes || 0) + 1);
+      const updatedVideo = await storage.updateVideoLikes(videoId, video.likes + 1);
       
       // Like video on blockchain
       await web3Service.likeVideo(video.contractVideoId);

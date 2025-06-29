@@ -59,7 +59,7 @@ export default function BettingModal({ open, onClose, event, odds }: BettingModa
       const transaction = prepareContractCall({
         contract: predictionMarketContract,
         method: "placeBet",
-        params: [BigInt(blockchainEventId+1), BigInt(option)], // Convert to 1-based indexing
+        params: [BigInt(blockchainEventId), BigInt(option + 1)], // Convert to 1-based indexing
         value: toWei(amount)
       });
 
