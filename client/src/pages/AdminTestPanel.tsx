@@ -20,7 +20,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { prepareContractCall, sendTransaction, toWei } from "thirdweb";
-import { predictionMarketContract, fanTokenDAOContract, skillShowcaseContract } from "@/lib/contracts";
+import { predictionMarketContract, fanTokenDAOContract, skillShowcaseContract, getLatestEventCounter } from "@/lib/contracts";
 import { useActiveWallet } from "thirdweb/react";
 
 export default function AdminTestPanel() {
@@ -63,13 +63,17 @@ export default function AdminTestPanel() {
         transaction,
         account: account!
       });
+
+      // Get the actual event ID from blockchain using event counter
+      const eventCounter = await getLatestEventCounter();
       
-      // Store in backend for UI display
+      // Store in backend for UI display with actual blockchain event ID
       await apiRequest('/api/admin/test/create-event', 'POST', {
         name: data.name,
         description: data.description,
         endTime: data.endTime,
-        txHash: result.transactionHash
+        txHash: result.transactionHash,
+        contractEventId: Number(eventCounter) // Use actual blockchain event ID
       });
       
       return result;

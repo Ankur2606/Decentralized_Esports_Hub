@@ -517,11 +517,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin testing endpoints - for MetaMask transaction completion
   app.post('/api/admin/test/create-event', async (req, res) => {
     try {
-      const { name, description, endTime, txHash } = req.body;
+      const { name, description, endTime, txHash, contractEventId } = req.body;
       
-      // Create event in storage for UI display
+      // Create event in storage for UI display using actual blockchain event ID
       const eventData = {
-        contractEventId: Math.floor(Math.random() * 1000) + 1,
+        contractEventId: contractEventId || Math.floor(Math.random() * 1000) + 1,
         name: name,
         description: description || "Test prediction event",
         game: "eSports",

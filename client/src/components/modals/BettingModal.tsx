@@ -14,6 +14,7 @@ import { Dice1, TrendingUp, Wallet } from "lucide-react";
 
 interface PredictionEvent {
   id: number;
+  contractEventId: number;
   name: string;
   description: string;
   game: string;
